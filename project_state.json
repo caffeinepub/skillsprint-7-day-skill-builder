@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "SkillSprint – 7 Day Skill Builder: A web app that generates structured 7-day skill-building execution plans. Users select a skill, set hours/day, skill level, and desired outcome. AI outputs a structured plan with daily objectives, tasks, exercises, deliverables, and estimated time. Includes progress tracker UI, PDF download, and a ₹20 UPI paywall before revealing the full sprint.",
+  "architectural_notes": [
+    "Light theme with blue accent, rounded cards, mobile responsive layout",
+    "UPI payment is manual (user inputs transaction ID) — no payment gateway integration required"
+  ],
+  "known_issues": [
+    "Day-wise plan content is blank — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time fields are not being populated in the generated sprint plan"
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-build-a-skill-input-form-page-as-the-app-s-landing-home-screen-the-form-must-include-1-a-skill-selector-a-dropdown-with-popular-skills-e-g-python-public-speaking-ui-design-excel-photography-writing-plus-a-custom-option-that-reveals-a-text-input-field-2-a-hours-per-day-slider-ranging-from-0-5-to-8-hours-in-0-5-increments-showing-the-current-value-3-a-skill-level-selector-with-three-buttons-beginner-intermediate-advanced-only-one-selectable-at-a-time-4-a-desired-outcome-text-input-placeholder-what-do-you-want-to-achieve-by-day-7-5-a-generate-my-sprint-cta-button-all-fields-are-required-before-submission",
+      "title": "Build a skill input form page as the app's landing/home screen. The form must include: (1) a skill selector — a dropdown with popular skills (e.g., Python, Public Speaking, UI Design, Excel, Photography, Writing) plus a 'Custom' option that reveals a text input field; (2) a hours-per-day slider ranging from 0.5 to 8 hours in 0.5 increments showing the current value; (3) a skill level selector with three buttons: Beginner, Intermediate, Advanced — only one selectable at a time; (4) a desired outcome text input (placeholder: 'What do you want to achieve by Day 7?'); (5) a 'Generate My Sprint' CTA button. All fields are required before submission.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-a-plan-results-page-that-displays-the-generated-sprint-the-page-must-show-1-a-skill-overview-card-at-the-top-2-a-day-by-day-accordion-or-card-list-for-day-1-7-each-showing-objective-action-task-practice-exercise-deliverable-and-estimated-time-3-an-end-of-week-result-section-4-a-3-common-mistakes-section-with-a-list-5-a-bonus-resource-card-with-a-clickable-link-for-locked-plans-payment-not-done-blur-or-hide-day-2-7-content-and-show-a-prominent-paywall-overlay-day-1-is-always-visible-as-a-preview",
+      "title": "Build a plan results page that displays the generated sprint. The page must show: (1) a Skill Overview card at the top; (2) a day-by-day accordion or card list for Day 1–7, each showing Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time; (3) an End of Week Result section; (4) a 3 Common Mistakes section with a list; (5) a Bonus Resource card with a clickable link. For locked plans (payment not done), blur or hide Day 2–7 content and show a prominent paywall overlay. Day 1 is always visible as a preview.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-paywall-ui-and-upi-payment-flow-before-revealing-the-full-sprint-days-2-7-show-a-modal-or-inline-section-with-1-headline-unlock-full-skillsprint-20-2-upi-id-to-pay-display-a-static-upi-id-e-g-skillsprint-upi-3-a-qr-code-placeholder-image-or-text-instruction-to-pay-20-4-a-text-input-labeled-enter-your-upi-transaction-id-5-a-verify-unlock-button-on-submission-call-the-backend-submittransactionid-method-on-success-reload-the-plan-in-unlocked-state-show-an-error-message-if-the-transaction-id-field-is-empty",
+      "title": "Implement the paywall UI and UPI payment flow. Before revealing the full sprint (Days 2–7), show a modal or inline section with: (1) headline 'Unlock Full SkillSprint – ₹20'; (2) UPI ID to pay: display a static UPI ID (e.g., skillsprint@upi); (3) a QR code placeholder image or text instruction to pay ₹20; (4) a text input labeled 'Enter your UPI Transaction ID'; (5) a 'Verify & Unlock' button. On submission, call the backend submitTransactionId method. On success, reload the plan in unlocked state. Show an error message if the transaction ID field is empty.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-interactive-progress-tracker-ui-to-the-plan-results-page-display-a-progress-bar-and-a-7-day-checklist-where-users-can-mark-each-day-as-complete-by-clicking-a-checkbox-or-toggle-the-progress-bar-must-update-in-real-time-to-reflect-the-percentage-of-days-completed-e-g-3-7-43-store-progress-state-in-frontend-local-state-no-backend-persistence-required-the-tracker-must-be-clearly-labeled-and-mobile-friendly",
+      "title": "Add an interactive progress tracker UI to the plan results page. Display a progress bar and a 7-day checklist where users can mark each day as complete by clicking a checkbox or toggle. The progress bar must update in real-time to reflect the percentage of days completed (e.g., 3/7 = 43%). Store progress state in frontend local state (no backend persistence required). The tracker must be clearly labeled and mobile-friendly.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-download-pdf-button-to-the-unlocked-plan-results-page-when-clicked-generate-a-pdf-client-side-using-a-library-such-as-jspdf-or-the-browser-s-print-dialog-window-print-with-a-print-specific-css-class-the-pdf-must-include-skill-name-level-hours-day-desired-outcome-skill-overview-all-7-days-with-their-full-fields-end-of-week-result-common-mistakes-and-bonus-resource-the-button-must-only-be-visible-active-after-the-plan-is-unlocked",
+      "title": "Add a 'Download PDF' button to the unlocked plan results page. When clicked, generate a PDF client-side using a library such as jsPDF or the browser's print dialog (window.print with a print-specific CSS class). The PDF must include: Skill name, level, hours/day, desired outcome, Skill Overview, all 7 days with their full fields, End of Week Result, Common Mistakes, and Bonus Resource. The button must only be visible/active after the plan is unlocked.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-clean-modern-light-theme-visual-design-consistently-across-the-entire-app-use-blue-as-the-primary-accent-color-e-g-2563eb-or-similar-white-light-gray-backgrounds-rounded-cards-with-subtle-shadows-and-a-clean-sans-serif-typography-all-interactive-elements-buttons-sliders-checkboxes-must-have-clear-hover-and-active-states-the-layout-must-be-fully-mobile-responsive-with-a-max-content-width-of-800px-centered-on-desktop-use-tailwind-css-utility-classes-throughout",
+      "title": "Apply a clean, modern light-theme visual design consistently across the entire app. Use blue as the primary accent color (e.g., #2563EB or similar), white/light gray backgrounds, rounded cards with subtle shadows, and a clean sans-serif typography. All interactive elements (buttons, sliders, checkboxes) must have clear hover and active states. The layout must be fully mobile responsive with a max content width of ~800px centered on desktop. Use Tailwind CSS utility classes throughout.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-planresults-page-frontend-src-pages-planresults-tsx-to-correctly-read-and-render-all-five-fields-per-day-card-objective-action-task-practice-exercise-deliverable-and-estimated-time-from-the-plan-data-returned-by-the-backend-ensure-the-field-to-display-mapping-matches-the-backend-data-structure-field-names-exactly-e-g-actiontask-practiceexercise-estimatedtime-each-day-card-must-display-all-five-fields-with-clear-labels-and-none-of-them-should-appear-blank-when-the-backend-returns-populated-data",
+      "title": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Skill input form: dropdown + custom input, hours/day slider, skill level selector (Beginner/Intermediate/Advanced), desired outcome text input",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "AI-generated 7-day plan: Skill Overview, Day 1–7 with Objective/Action Task/Practice Exercise/Deliverable/Estimated Time, End of Week Result, 3 Common Mistakes, 1 Bonus Resource",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Progress tracker UI with interactive progress bar",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Download PDF option for the generated sprint plan",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Paywall before full sprint reveal: ₹20 unlock via manual UPI transaction ID input",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Create a backend actor that stores skill sprint plans and payment verification records. The actor must support: (1) storing a generated 7-day sprint plan keyed by a unique plan ID, (2) recording a UPI transaction ID submission for a given plan ID, (3) marking a plan as unlocked after transaction ID is submitted, (4) retrieving a plan (locked state returns only overview; unlocked state returns full plan). The plan data structure must include: skillName, hoursPerDay, skillLevel (Beginner/Intermediate/Advanced), desiredOutcome, skillOverview, days (array of 7 objects each with objective, actionTask, practiceExercise, deliverable, estimatedTime), endOfWeekResult, commonMistakes (array of 3 strings), bonusResource (title + URL), and unlockedStatus (bool).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Implement deterministic plan generation logic in the backend. Given skillName, hoursPerDay, skillLevel, and desiredOutcome as inputs, generate a complete 7-day sprint plan programmatically (no external AI API). Use a structured template approach: each day's objective, actionTask, practiceExercise, deliverable, and estimatedTime are derived from the skill name, level, and hours. Include a 3-item commonMistakes array and one bonusResource with a relevant title. The output must be concise and actionable with no motivational filler text.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Fix blank day-wise content in the generated sprint plan — each day must display actual content for Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time fields",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Fix the backend plan generation logic in backend/main.mo so that each of the 7 days in the generated sprint plan is populated with actual, meaningful content for all five fields: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time. The content must be derived from the inputs (skillName, hoursPerDay, skillLevel, desiredOutcome) using a structured template approach. Each day must have a distinct, progressively advancing theme (e.g., Day 1 = fundamentals/setup, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final deliverable/assessment). No field in any day object may be left as an empty string or placeholder.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "SkillSprint – 7 Day Skill Builder",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

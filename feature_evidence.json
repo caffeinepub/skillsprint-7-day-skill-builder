@@ -1,0 +1,23 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-update-the-planresults-page-frontend-src-pages-planresults-tsx-to-correctly-read-and-render-all-five-fields-per-day-card-objective-action-task-practice-exercise-deliverable-and-estimated-time-from-the-plan-data-returned-by-the-backend-ensure-the-field-to-display-mapping-matches-the-backend-data-structure-field-names-exactly-e-g-actiontask-practiceexercise-estimatedtime-each-day-card-must-display-all-five-fields-with-clear-labels-and-none-of-them-should-appear-blank-when-the-backend-returns-populated-data",
+      "featureTitle": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
+      "files": [
+        "frontend/src/pages/PlanResults.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

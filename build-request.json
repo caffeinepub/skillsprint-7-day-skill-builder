@@ -1,0 +1,62 @@
+{
+  "kind": "build_request",
+  "title": "Fix blank day-wise content in generated sprint plan",
+  "projectName": "SkillSprint",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-9",
+      "text": "Fix the backend plan generation logic in backend/main.mo so that each of the 7 days in the generated sprint plan is populated with actual, meaningful content for all five fields: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time. The content must be derived from the inputs (skillName, hoursPerDay, skillLevel, desiredOutcome) using a structured template approach. Each day must have a distinct, progressively advancing theme (e.g., Day 1 = fundamentals/setup, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final deliverable/assessment). No field in any day object may be left as an empty string or placeholder.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "when you are giving every day plan then mention and give them the content of what they should do the day wise content is blank"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All 7 day objects returned by the backend have non-empty strings for objective, actionTask, practiceExercise, deliverable, and estimatedTime.",
+        "Content varies meaningfully across all 7 days — no two days share the same objective or action task text.",
+        "Content references the skill name and skill level so it feels relevant to the user's input.",
+        "Estimated time is expressed as a duration (e.g., '1.5 hours') consistent with the hoursPerDay input.",
+        "Generating a plan for any supported skill (Python, Public Speaking, UI Design, Excel, Photography, Writing, or a custom skill) produces non-blank day content."
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "the day wise content is blank"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each day card on the Plan Results page displays all five labeled sections: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time.",
+        "Field names used in the JSX destructuring match the exact property names returned by the backend (no mismatched keys causing undefined renders).",
+        "Day 1 always renders all five fields in the unlocked/preview state.",
+        "Days 2–7 render all five fields when the plan is unlocked.",
+        "No day card shows empty or 'undefined' text for any of the five fields when the backend has returned valid data."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not change the plan data structure shape — all existing fields (skillName, hoursPerDay, skillLevel, desiredOutcome, skillOverview, days, endOfWeekResult, commonMistakes, bonusResource, unlockedStatus) must remain intact.",
+    "Do not modify files under frontend/src/hooks/ or frontend/src/components/ui.",
+    "No external AI or API calls — plan content must be generated deterministically in Motoko."
+  ],
+  "nonGoals": [
+    "Adding new fields to the plan data structure beyond the existing five per day.",
+    "Changing the paywall, progress tracker, or PDF download functionality.",
+    "Modifying the visual design or layout of day cards beyond ensuring content renders."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

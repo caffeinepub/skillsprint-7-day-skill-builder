@@ -1,0 +1,47 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-25T09:38:38.009Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-10",
+        "summary": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/PlanResults.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/PlanResults.tsx"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Fix the backend plan generation logic in backend/main.mo so that each of the 7 days in the generated sprint plan is populated with actual, meaningful content for all five fields: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time. The content must be derived from the inputs (skillName, hoursPerDay, skillLevel, desiredOutcome) using a structured template approach. Each day must have a distinct, progressively advancing theme (e.g., Day 1 = fundamentals/setup, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final deliverable/assessment). No field in any day object may be left as an empty string or placeholder.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "build-template/README.md",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/pages/PlanResults.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

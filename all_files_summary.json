@@ -1,0 +1,22 @@
+{
+  "backend/main.mo": "Main Motoko actor defining SprintPlan data types, in-memory plan/payment storage, plan generation logic across 7 days, and public API methods for creating plans, retrieving plans, checking unlock status, and submitting transaction IDs.",
+  "backend/migration.mo": "Motoko migration module that defines old and new actor state shapes (identical SprintPlan/payment structures) and a run function that carries state forward while incrementing nextPlanId by 1.",
+  "feature_evidence.json": "Feature evidence report confirming that PlanResults.tsx was updated to correctly map and display all five backend day-card fields (objectives, actionTask, practiceExercise, deliverable, estimatedTime) with clear labels.",
+  "frontend-file-summaries.txt": "JSON document containing one-line summaries of all frontend source files, serving as a quick reference for the purpose and contents of each frontend module.",
+  "frontend/index.css": "Tailwind base CSS file defining OKLCH-based CSS custom properties for light and dark theme color tokens (background, foreground, card, primary, etc.) used throughout the app.",
+  "frontend/index.html": "Minimal HTML entry point that sets the page title to 'SkillSprint – 7 Day Skill Builder' and mounts the React app via the #root div and main.tsx module script.",
+  "frontend/src/App.tsx": "TanStack Router configuration that defines three routes: a root route wrapping all pages in Layout, a home route for SkillInputForm, and a /plan/$planId route for PlanResults.",
+  "frontend/src/components/DownloadPdfButton.tsx": "Button component that generates a fully styled print-ready HTML page containing all 7 sprint days and plan metadata, then opens it in a new window and triggers the browser's print dialog for PDF saving.",
+  "frontend/src/components/Layout.tsx": "App shell component rendering a sticky header with logo and branding, a flexible main content area, and a footer with copyright and a caffeine.ai attribution link.",
+  "frontend/src/components/PaywallModal.tsx": "Modal component that displays UPI payment instructions with a hardcoded UPI ID and amount, accepts a transaction ID input, and calls the submitTransactionId mutation to unlock the full sprint plan.",
+  "frontend/src/components/ProgressTracker.tsx": "A React component that displays a 7-day sprint progress tracker with a progress bar, percentage, and toggleable day buttons that respect locked/unlocked state.",
+  "frontend/src/hooks/useActor.ts": "A custom hook that creates and caches an ICP backend actor (authenticated or anonymous) using React Query, and invalidates dependent queries when the actor changes.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides an InternetIdentityProvider and useInternetIdentity hook for managing ICP Internet Identity authentication state, including login, logout, and identity persistence via AuthClient.",
+  "frontend/src/hooks/useQueries.ts": "Defines React Query hooks for backend interactions: creating plans, fetching plan details and public views, checking unlock status, and submitting transaction IDs.",
+  "frontend/src/index.css": "Global stylesheet that sets up Tailwind CSS, imports Inter and Plus Jakarta Sans fonts, defines a blue-accented light theme via CSS custom properties, and adds utility classes and print styles.",
+  "frontend/src/main.tsx": "Application entry point that mounts the React app with QueryClientProvider and InternetIdentityProvider wrapping the root App component.",
+  "frontend/src/pages/PlanResults.tsx": "A page component that displays a generated 7-day skill sprint plan, showing day cards with objectives, tasks, and exercises, with locked days blurred behind a paywall modal.",
+  "frontend/src/pages/SkillInputForm.tsx": "A form page where users select a skill, set hours per day, choose a skill level, and enter a desired outcome to generate an AI-powered 7-day learning sprint plan.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration for the frontend, extending the default theme with custom colors (oklch-based design tokens), fonts, border radii, box shadows, and enabling dark mode, typography, container queries, and animation plugins.",
+  "project_state.json": "Project state descriptor for SkillSprint, documenting the app summary, architectural notes, known issues (blank day-wise plan content), and all existing/planned features with their requirement IDs and implementation versions."
+}

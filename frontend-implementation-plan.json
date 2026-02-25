@@ -1,0 +1,25 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix blank day-wise content in generated sprint plan",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "summary": "Update PlanResults page to correctly render all five fields per day card with proper field name mapping",
+      "acceptanceCriteria": [
+        "Each day card on the Plan Results page displays all five labeled sections: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time.",
+        "Field names used in the JSX destructuring match the exact property names returned by the backend (no mismatched keys causing undefined renders).",
+        "Day 1 always renders all five fields in the unlocked/preview state.",
+        "Days 2–7 render all five fields when the plan is unlocked.",
+        "No day card shows empty or 'undefined' text for any of the five fields when the backend has returned valid data."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/PlanResults.tsx",
+          "operation": "modify",
+          "description": "Fix the day card rendering logic to display all five fields with correct backend field mapping. Ensure destructuring uses 'objectives' (matching backend DayPlan.objectives), 'actionTask', 'practiceExercise', 'deliverable', and 'estimatedTime'. Convert estimatedTime (bigint) to a readable duration string. Add clear labels for each field in both unlocked day cards and the Day 1 preview card. Verify all five fields render for Day 1 in the public view and for all days when unlocked."
+        }
+      ]
+    }
+  ]
+}

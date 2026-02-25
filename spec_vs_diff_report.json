@@ -1,0 +1,42 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-25T09:38:38.005Z",
+  "summary": "The diff addresses both REQ-9 (backend plan generation) and REQ-10 (frontend rendering). The backend generates 7 days with distinct content referencing skillName, and the frontend renders all five fields per day card. However, there are notable discrepancies: estimatedTime is typed as Nat (integer hours) in Motoko rather than a formatted duration string like '1.5 hours' as required by the AC. The skill level parameter is accepted but never interpolated into generated content strings. A migration module was added that was not requested.",
+  "missing_requirements": [
+    {
+      "id": "REQ-9",
+      "requirement": "Estimated time is expressed as a duration (e.g., '1.5 hours') consistent with the hoursPerDay input.",
+      "reason": "The backend stores estimatedTime as Nat (integer), so fractional hours like '1.5 hours' cannot be represented. The AC explicitly requires duration strings. The formatting to a string is done only on the frontend via formatEstimatedTime, but the backend field is a plain integer that cannot express sub-hour values.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/pages/PlanResults.tsx"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "requirement": "Content references the skill level so it feels relevant to the user's input.",
+      "reason": "The 'level' parameter is accepted by generateStartDay and generateOtherDay but is never actually interpolated into any of the generated content strings — it is unused in the template text.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "A migration.mo module was added with a Migration.run function that increments nextPlanId by 1 as part of actor state migration.",
+      "reason": "The build request does not mention any migration module or state migration logic. This is entirely unrequested functionality.",
+      "evidence": [
+        "backend/migration.mo"
+      ]
+    }
+  ],
+  "confidence": 0.75,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/pages/PlanResults.tsx",
+    "project_state.json"
+  ]
+}
