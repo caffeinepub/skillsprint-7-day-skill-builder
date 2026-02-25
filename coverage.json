@@ -1,45 +1,41 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T17:46:03.766Z",
+  "generatedAt": "2026-02-25T18:37:23.920Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 2,
-    "implemented": 2,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-19",
-        "summary": "In the PaywallModal component (frontend/src/components/PaywallModal.tsx), replace the existing informational/disclaimer message with the following exact text: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' Display this message prominently within the payment section, styled to convey trust and seriousness (e.g., using a distinct info/warning style box with an icon such as a shield or info symbol).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/PaywallModal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/PaywallModal.tsx"
-        ]
+        "id": "REQ-25",
+        "summary": "In backend/main.mo, replace all dynamic or placeholder resource URL generation logic with a fully hardcoded, structured conditional mapping. For each supported skill — Public Speaking, Python, Excel, UI Design, Photography, Writing — define a static array of exactly 2–3 resource objects (each with title, URL, and descriptor) for each of the 7 days. All URLs must be real, publicly accessible links such as official documentation pages (e.g., docs.python.org), YouTube search URLs (e.g., https://www.youtube.com/results?search_query=python+basics), freeCodeCamp articles, MDN Web Docs, Canva Design School, or Coursera free previews. No example.com, placeholder, or string-interpolated fake URLs are permitted. The conditional mapping must be purely static: skill name and skill level are used as keys to select the appropriate resource variant. Day themes must follow the existing progression: Day 1 = fundamentals/setup, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final assessment/wrap-up. Where multiple resource variants exist for the same day, skill level (Beginner / Intermediate / Advanced) must determine which variant is selected. For any skill not in the supported list (e.g., custom skill input), fall back to a set of generic but real learning resource links (e.g., YouTube search URL based on skill name, a freeCodeCamp or Khan Academy general learning link) rather than leaving the array empty.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-20",
-        "summary": "Redesign the PaywallModal component (frontend/src/components/PaywallModal.tsx) to appear more premium and trustworthy. The redesign must include: (1) a refined card layout with a dark or deep-gradient background (e.g., deep navy, dark slate, or rich charcoal) contrasted with bright accent colors from the existing Gen-Z palette for CTAs; (2) a prominent trust badge or shield icon near the headline to signal security; (3) the UPI ID displayed in a styled, clearly readable block (e.g., monospace font in a highlighted pill or box); (4) the QR code / payment instruction area given a dedicated framed section with padding and a subtle border; (5) the transaction ID input field styled with a clear, premium look — larger padding, visible focus ring, and a descriptive label; (6) the 'Verify & Unlock' button styled as a high-contrast, gradient CTA button with a lock or checkmark icon; (7) subtle dividers between payment steps to guide the user through the flow. All existing functional behavior (submitting transaction ID, calling backend, error handling) must remain unchanged.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/PaywallModal.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/PaywallModal.tsx"
-        ]
+        "id": "REQ-26",
+        "summary": "Update backend/migration.mo so that on canister upgrade, any existing stored SprintPlans have their per-day resources arrays fully replaced using the new fixed resource mapping defined in REQ-25. Plans whose resources arrays contain example.com URLs, empty strings, or placeholder entries must be updated to the new real resource links. The migration must iterate over all stored plans, re-derive the correct skill/level/day resource mapping, and overwrite the resources field on each DayPlan accordingly.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/PaywallModal.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

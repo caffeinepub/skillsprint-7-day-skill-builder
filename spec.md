@@ -1,17 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Update the PaywallModal with a new payment disclaimer message and a premium visual redesign.
+**Goal:** Replace all placeholder and dynamically generated resource URLs in the backend with a fully hardcoded, static conditional mapping of real, publicly accessible learning resources for each supported skill and day.
 
 **Planned changes:**
-- Replace the existing payment disclaimer in `PaywallModal.tsx` with the exact text: "Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation." displayed in a styled notice box with a shield or info icon.
-- Redesign the PaywallModal with a dark/deep-gradient background (navy, slate, or charcoal) and bright Gen-Z accent colors for CTAs.
-- Add a prominent shield/security icon near the modal headline.
-- Display the UPI ID in a styled monospace pill or highlighted box.
-- Give the QR code / payment instruction area a dedicated framed section with padding and a subtle border.
-- Style the transaction ID input with larger padding, a visible focus ring, and a descriptive label.
-- Style the "Verify & Unlock" button as a high-contrast gradient CTA with a lock or checkmark icon.
-- Add subtle dividers between payment steps to guide users through the flow.
-- Preserve all existing functional behavior (submitTransactionId mutation, success/error handling, unlock state reload).
+- In `backend/main.mo`, replace all dynamic/placeholder resource URL logic with a static conditional mapping covering 6 supported skills (Public Speaking, Python, Excel, UI Design, Photography, Writing), each with 2–3 real resource objects (title, URL, descriptor) per day across all 7 days
+- Day themes follow a fixed progression: Day 1 = fundamentals/setup, Day 2–3 = core concepts, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final assessment
+- Skill level (Beginner/Intermediate/Advanced) determines which resource variant is selected when multiple variants exist for the same skill+day
+- Unsupported/custom skills fall back to a generic set of real resource links (e.g., YouTube search URL, freeCodeCamp or Khan Academy links) instead of an empty array
+- All URLs must be literal hardcoded strings — no string interpolation or runtime URL construction permitted
+- In `backend/migration.mo`, update the upgrade migration to iterate over all stored `SprintPlans` and overwrite each day's resources array using the new fixed mapping, replacing any example.com, placeholder, or empty resource entries with real URLs
 
-**User-visible outcome:** The PaywallModal looks premium and trustworthy with a dark gradient card design, security iconography, clearly styled UPI details, and a prominent CTA button, while displaying the new beta payment verification notice.
+**User-visible outcome:** Users viewing their sprint plan study resources will see real, working learning links for every day of every plan, including plans created before this update.

@@ -1,39 +1,66 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T17:46:03.761Z",
-  "summary": "The diff shows PaywallModal.tsx has been redesigned with a premium dark gradient background, shield trust badge, copyable UPI ID pill, styled transaction input, gradient CTA button, and a prominent amber trust notice with the required disclaimer text. Both REQ-19 and REQ-20 appear largely implemented. Minor details need verification due to truncation.",
+  "generatedAt": "2026-02-25T18:37:23.916Z",
+  "summary": "The diff adds backend/migration.mo and modifies backend/main.mo to introduce a static resource mapping function. However, the implementation is severely incomplete relative to REQ-25 and REQ-26. Only a handful of skill/level/day combinations are defined — far fewer than the required 2–3 resources for all 6 supported skills × 7 days × skill levels. The migration logic exists structurally but falls back to empty arrays for most combinations, violating the core acceptance criteria.",
   "missing_requirements": [
     {
-      "id": "REQ-20",
-      "requirement": "Subtle dividers between payment steps to guide the user through the flow.",
-      "reason": "The diff is truncated and the lower portion of the modal (payment steps area with dividers) is not visible in the diff. Cannot confirm dividers between steps are present.",
+      "id": "REQ-25",
+      "requirement": "Every supported skill (Public Speaking, Python, Excel, UI Design, Photography, Writing) has exactly 2–3 resource objects defined per day (Days 1–7) in the backend mapping.",
+      "reason": "The diff only defines a small handful of switch cases. The vast majority of skill+level+day combinations fall through to the default case returning empty arrays, violating the AC requiring non-empty resources for all 7 days of each skill.",
       "evidence": [
-        "frontend/src/components/PaywallModal.tsx"
+        "backend/main.mo",
+        "backend/migration.mo"
       ]
     },
     {
-      "id": "REQ-20",
-      "requirement": "The QR code / payment instruction area given a dedicated framed section with padding and a subtle border.",
-      "reason": "The diff is truncated before the QR code / payment instruction section is shown, so it cannot be confirmed this dedicated framed section with padding and subtle border exists.",
+      "id": "REQ-25",
+      "requirement": "Custom/unsupported skills fall back to a generic set of real resource links rather than an empty array.",
+      "reason": "The wildcard default case in both main.mo and migration.mo returns an empty array for any unsupported/custom skill, directly violating the requirement for a generic real-URL fallback.",
       "evidence": [
-        "frontend/src/components/PaywallModal.tsx"
+        "backend/main.mo",
+        "backend/migration.mo"
       ]
-    }
-  ],
-  "hallucinated_features": [
+    },
     {
-      "description": "Copy-to-clipboard functionality for the UPI ID with a copied state indicator.",
-      "reason": "The handleCopyUpi function and copied/setCopied state were implemented, but neither the spec nor the requirements mention a copy button or clipboard feature for the UPI ID.",
+      "id": "REQ-25",
+      "requirement": "All 7 days for each skill return a non-empty resources array when a plan is fetched.",
+      "reason": "Because most day indices for most skills hit the wildcard default and return empty arrays, the vast majority of days across all skills will return empty resource arrays.",
       "evidence": [
-        "frontend/src/components/PaywallModal.tsx"
+        "backend/main.mo",
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "requirement": "Skill level (Beginner/Intermediate/Advanced) influences resource selection where multiple variants are defined for the same skill+day.",
+      "reason": "Only a few cases distinguish by level (e.g., public speaking day 0 has beginner/intermediate/advanced variants). For Python, Excel, UI Design, Photography, and Writing, level-based differentiation is absent or minimal across most days.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "requirement": "Each day in every stored plan has 2–3 resource entries populated with real URLs from the new fixed mapping after migration.",
+      "reason": "migration.mo getResourcesForDay has the same sparse switch table as main.mo and defaults to empty arrays, so migrated plans will still have empty resource arrays for most days.",
+      "evidence": [
+        "backend/migration.mo"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "requirement": "Plans with unsupported/custom skill names receive the generic fallback resource links rather than empty arrays.",
+      "reason": "migration.mo default case returns an empty array for unrecognized skills, providing no fallback resources.",
+      "evidence": [
+        "backend/migration.mo"
       ]
     }
   ],
-  "confidence": 0.7,
+  "hallucinated_features": [],
+  "confidence": 0.82,
   "changed_files": [
-    "frontend-file-summaries.txt",
-    "frontend/src/components/PaywallModal.tsx",
+    "backend/main.mo",
+    "backend/migration.mo",
     "project_state.json"
   ]
 }

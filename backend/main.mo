@@ -1,15 +1,15 @@
 import Text "mo:core/Text";
 import Nat "mo:core/Nat";
-import Runtime "mo:core/Runtime";
 import Array "mo:core/Array";
 import Map "mo:core/Map";
+import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
 
-
 import MixinStorage "blob-storage/Mixin";
+import Migration "migration";
 
 // Apply migration on upgrade!
-
+(with migration = Migration.run)
 actor {
   include MixinStorage();
 
@@ -65,156 +65,152 @@ actor {
 
   var nextPlanId = 1;
 
-  func generateResources(skillName : Text, level : Text, dayTheme : Text) : [Resource] {
-    let baseResources = [
-      {
-        title = "Official Documentation";
-        url = "https://www.example.com/docs/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-        description = "Comprehensive guide to " # skillName # ".";
-      },
-      {
-        title = "Introductory Tutorial";
-        url = "https://www.example.com/tutorial/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-        description = "Beginner-friendly tutorial for " # skillName # ".";
-      },
-      {
-        title = "Best Practices";
-        url = "https://www.example.com/best-practices/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-        description = "Tips and tricks for mastering " # skillName # ".";
-      },
-    ];
-    switch (level, dayTheme) {
-      case ("beginner", "fundamentals") {
+  func getResourcesForDay(skill : Text, level : Text, day : Nat) : [Resource] {
+    switch (skill, level, day) {
+      // Public Speaking
+      case ("public speaking", "beginner", 0) {
         [
           {
-            title = "Getting Started With " # skillName;
-            url = "https://www.example.com/getting-started/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-            description = "Perfect for mastering the basics of " # skillName # ".";
+            title = "Intro to Public Speaking";
+            url = "https://www.youtube.com/results?search_query=intro+to+public+speaking";
+            description = "YouTube curated introduction playlist.";
           },
           {
-            title = "Fundamental Concepts";
-            url = "https://www.example.com/fundamental-concepts/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-            description = "Core concepts explained in simple terms.";
+            title = "Overcoming Stage Fright";
+            url = "https://www.mindtools.com/a5ka4l1/overcoming-stage-fright";
+            description = "MindTools article on confidence building.";
           },
         ];
       };
-      case ("intermediate", "advanced") {
+      case ("public speaking", "intermediate", 0) {
         [
           {
-            title = "Intermediate Projects for " # skillName;
-            url = "https://www.example.com/intermediate-projects/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-            description = "Take your " # skillName # " skills to the next level.";
+            title = "Effective Communication";
+            url = "https://www.coursera.org/learn/wharton-communication-skills";
+            description = "Coursera course preview on communication strategies.";
           },
-          baseResources[1],
-          baseResources[2],
         ];
       };
-      case ("advanced", "optimization") {
+      case ("public speaking", "advanced", 0) {
         [
           {
-            title = "Advanced " # skillName # " Techniques";
-            url = "https://www.example.com/advanced-techniques/" # skillName.map(func(c) { if (c == ' ') { '-' } else { c } });
-            description = "Optimize your " # skillName # " projects for performance.";
+            title = "Advanced Presentation Techniques";
+            url = "https://hbr.org/2019/04/how-to-give-a-killer-presentation";
+            description = "Harvard Business Review article on advanced public speaking.";
           },
-          baseResources[2],
         ];
       };
-      case (_, _) { baseResources };
+      case ("public speaking", _, 1) {
+        [
+          {
+            title = "Structure a Speech";
+            url = "https://examples.yourdictionary.com/examples-of-speech";
+            description = "Examples and templates for structuring speeches.";
+          },
+        ];
+      };
+      // Python
+      case ("python", "beginner", 0) {
+        [
+          {
+            title = "Python Official Tutorials";
+            url = "https://docs.python.org/3/tutorial/index.html";
+            description = "Guided fundamentals by Python Software Foundation.";
+          },
+          {
+            title = "Beginner Python Exercises";
+            url = "https://exercism.org/tracks/python/exercises";
+            description = "Free coding challenges on Exercism.";
+          },
+        ];
+      };
+      case ("python", "intermediate", 3) {
+        [
+          {
+            title = "Python Project Templates";
+            url = "https://realpython.com/tutorials/projects/";
+            description = "RealPython project guides.";
+          },
+          {
+            title = "Automate the Boring Stuff";
+            url = "https://automatetheboringstuff.com/";
+            description = "Automation projects using Python.";
+          },
+        ];
+      };
+      // Excel
+      case ("excel", _, 0) {
+        [
+          {
+            title = "Excel Basics";
+            url = "https://exceljet.net/tutorial";
+            description = "Step-by-step guides on Excel fundamentals.";
+          },
+        ];
+      };
+      // UI Design
+      case ("ui design", _, 0) {
+        [
+          {
+            title = "UI Design Principles";
+            url = "https://developer.mozilla.org/en-US/docs/Learn/Forms";
+            description = "MDN Web Docs on UI design forms.";
+          },
+        ];
+      };
+      // Photography
+      case ("photography", _, 0) {
+        [
+          {
+            title = "Beginner Photography Guide";
+            url = "https://www.photographytalk.com/learn-photography";
+            description = "Photography Talk articles for beginners.";
+          },
+        ];
+      };
+      // Writing
+      case ("writing", _, 0) {
+        [
+          {
+            title = "Creative Writing Basics";
+            url = "https://www.freecodecamp.org/news/category/writing/";
+            description = "freeCodeCamp resources on writing.";
+          },
+        ];
+      };
+      // Generic fallback for custom skills
+      case (_, _, 0) {
+        [
+          {
+            title = "Getting Started Guide";
+            url = "https://www.codecademy.com/learn";
+            description = "Codecademy resources for various skills.";
+          },
+        ];
+      };
+      // FINAL SWITCH CASE for case not handled
+      case (_) { [] };
     };
   };
 
-  func generateStartDay(skillName : Text, level : Text, hours : Nat) : DayPlan {
+  func generateDayPlan(skillName : Text, level : Text, hours : Nat, dayIndex : Nat) : DayPlan {
     {
-      objectives = "Master the fundamentals of " # skillName # ". Begin by understanding the core components and their practical applications.";
-      actionTask = "Setup your development environment and complete a simple project that demonstrates the basics of " # skillName # ".";
-      practiceExercise = "Identify real-world examples where " # skillName # " is used. Analyze its architecture and deconstruct its core functionality.";
-      deliverable = "Submit a detailed technical document that outlines your understanding of " # skillName # " basics, including key terminologies and essential components.";
+      objectives = "Objectives for day " # dayIndex.toText();
+      actionTask = "Complete tasks for day " # dayIndex.toText();
+      practiceExercise = "Practice exercises for day " # dayIndex.toText();
+      deliverable = "Submit deliverables for day " # dayIndex.toText();
       estimatedTime = hours + 1;
-      resources = generateResources(skillName, level, "fundamentals");
+      resources = getResourcesForDay(skillName, level, dayIndex);
     };
   };
 
-  func generateOtherDay(skillName : Text, level : Text, hours : Nat, objectives : Text, actionTask : Text, practiceExercise : Text, deliverable : Text, estimatedTime : Nat, theme : Text) : DayPlan {
-    {
-      objectives;
-      actionTask;
-      practiceExercise;
-      deliverable;
-      estimatedTime;
-      resources = generateResources(skillName, level, theme);
-    };
-  };
-
-  func generateAllDays(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : [DayPlan] {
-    [
-      generateStartDay(skillName, level, hoursPerDay),
-      generateOtherDay(
-        skillName,
-        level,
-        hoursPerDay,
-        "Deepen your understanding of " # skillName # " and its application in managing complex data and system integration.",
-        "Explore core components associated with " # skillName # " and integrate them into a small application. Demonstrate advanced usage scenarios.",
-        "Complete hands-on tasks that involve complex data manipulation and integration using " # skillName # ".",
-        "Submit a technical report that details advanced usage, demonstrates complex integration, and outlines best practices in " # skillName # ".",
-        hoursPerDay + 2,
-        "intermediate",
-      ),
-      generateOtherDay(
-        skillName,
-        level,
-        hoursPerDay,
-        "Learn advanced application of " # skillName # " in real-world scenarios. Focus on optimization and scalability.",
-        "Implement best practices for data management and system performance using " # skillName # ".",
-        "Refactor an existing application to optimize performance and achieve scalability.",
-        "Deliver a performance report and demonstrate tangible improvements in data management efficiency and system scalability.",
-        hoursPerDay + 1,
-        "optimization",
-      ),
-      generateOtherDay(
-        skillName,
-        level,
-        hoursPerDay,
-        "Explore advanced design patterns and software architecture using " # skillName # ".",
-        "Research and implement complex architectural designs that optimize system performance and maintain best practices.",
-        "Refactor an application to incorporate complex design patterns.",
-        "Submit a design brief and demonstrate the resulting performance improvements in application scalability and maintainability.",
-        hoursPerDay + 3,
-        "advanced",
-      ),
-      generateOtherDay(
-        skillName,
-        level,
-        hoursPerDay,
-        "Apply your " # skillName # " knowledge by developing a comprehensive project that demonstrates your proficiency.",
-        "Design a full-scale application from scratch using " # skillName # ". Incorporate advanced features and ensure optimal performance.",
-        "Create a portfolio project. Submit the final product and documentation.",
-        "Deliver a final presentation, complete with project documentation, user guides, and a summary of your " # skillName # " expertise.",
-        hoursPerDay,
-        "project",
-      ),
-      generateOtherDay(
-        skillName,
-        level,
-        hoursPerDay,
-        "Comprehensively review your " # skillName # " skill set. Focus on knowledge retention and competency.",
-        "Take a timed assessment that thoroughly tests all aspects of " # skillName # ", including advanced application and problem-solving scenarios.",
-        "Complete hands-on testing and practical exercises.",
-        "Achieve a passing score in the assessment and submit your documentation for final approval.",
-        hoursPerDay,
-        "review",
-      ),
-      generateOtherDay(
-        skillName,
-        level,
-        hoursPerDay,
-        "Resolve real-world case studies using advanced " # skillName # " techniques.",
-        "Act as a consultant and solve practical business problems using your new skills.",
-        "Submit a technical report containing proposed solutions and their justification.",
-        "Your documented master skill set will support promotions, salary increases, and freelance opportunities.",
-        hoursPerDay + 1,
-        "assessment",
-      ),
-    ];
+  func generateAllDays(skillName : Text, hoursPerDay : Nat, level : Text, _outcome : Text) : [DayPlan] {
+    Array.tabulate<DayPlan>(
+      7,
+      func(dayIndex) {
+        generateDayPlan(skillName, level, hoursPerDay, dayIndex);
+      },
+    );
   };
 
   func generatePlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : SprintPlan {
@@ -237,7 +233,7 @@ actor {
       ];
       bonusResource = {
         title = "Advanced Resources in " # skillName # " Techniques";
-        url = "http://example.com/advanced-resources";
+        url = "http://advanced-resources.example.com";
       };
       unlockedStatus = false;
     };

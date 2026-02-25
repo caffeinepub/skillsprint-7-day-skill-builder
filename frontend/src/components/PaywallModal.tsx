@@ -20,7 +20,7 @@ interface PaywallModalProps {
   onUnlocked: () => void;
 }
 
-const UPI_ID = 'skillsprint@upi';
+const UPI_ID = 'nidhi.aesticare@okhdfcbank';
 const AMOUNT = '₹20';
 
 const UNLOCK_PERKS = [

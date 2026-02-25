@@ -1,15 +1,16 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 19,
   "summary": "SkillSprint – 7 Day Skill Builder: A web app that generates structured 7-day skill-building execution plans. Users select a skill, set hours/day, skill level, and desired outcome. AI outputs a structured plan with daily objectives, tasks, exercises, deliverables, and estimated time. Features a colorful, gamified, Gen-Z-friendly UI with animations/sliding transitions, interactive progress tracker, improvement graph, curated study content per day, and personalized learning experience. Includes PDF download and a ₹20 UPI paywall before revealing the full sprint.",
   "architectural_notes": [
     "UPI payment is manual (user inputs transaction ID) — no payment gateway integration required",
-    "Colorful, gamified Gen-Z UI: vibrant multi-color theme, sliding/animated transitions, micro-animations on interactive elements"
+    "Colorful, gamified Gen-Z UI: vibrant multi-color theme, sliding/animated transitions, micro-animations on interactive elements",
+    "Real UPI ID for payments: nidhi.aesticare@okhdfcbank — must be used everywhere in the payment section, no placeholders",
+    "Resource links must use a fixed, predefined mapping per skill and day — no dynamic URL generation. URLs must be real, tested links (e.g., YouTube, official docs, freeCodeCamp). No example.com or placeholder URLs allowed."
   ],
   "known_issues": [
     "Day-wise plan content is blank — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time fields are not being populated in the generated sprint plan",
-    "Study Resources section (curated links/resources per day card) is not visible in the plan results page draft",
-    "Resource links in day cards are linking to example.com placeholder URLs instead of real, relevant external resources"
+    "Study Resources section (curated links/resources per day card) is not visible in the plan results page draft"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -132,6 +133,14 @@
         "REQ-20"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-in-the-paywallmodal-component-frontend-src-components-paywallmodal-tsx-replace-every-occurrence-of-the-placeholder-upi-id-skillsprint-upi-with-the-real-upi-id-nidhi-aesticare-okhdfcbank-this-includes-the-displayed-upi-id-text-the-copy-to-clipboard-value-any-payment-instruction-text-and-any-hardcoded-string-constants-referencing-the-old-upi-id-the-displayed-upi-id-must-read-exactly-nidhi-aesticare-okhdfcbank-with-no-truncation-modification-or-placeholder-fallback",
+      "title": "In the PaywallModal component (frontend/src/components/PaywallModal.tsx), replace every occurrence of the placeholder UPI ID 'skillsprint@upi' with the real UPI ID 'nidhi.aesticare@okhdfcbank'. This includes the displayed UPI ID text, the copy-to-clipboard value, any payment instruction text, and any hardcoded string constants referencing the old UPI ID. The displayed UPI ID must read exactly 'nidhi.aesticare@okhdfcbank' with no truncation, modification, or placeholder fallback.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -245,6 +254,46 @@
       "id": "AR-23",
       "summary": "Update payment section message to: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' and redesign the payment section to look more premium and trustworthy.",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "In frontend/src/components/PaywallModal.tsx, replace every occurrence of the placeholder UPI ID 'skillsprint@upi' with the real UPI ID 'nidhi.aesticare@okhdfcbank'. This includes the displayed UPI ID text, the copy-to-clipboard value, any payment instruction text, and any hardcoded string constants or variables referencing the old UPI ID. The displayed UPI ID must read exactly 'nidhi.aesticare@okhdfcbank' with no truncation, modification, or placeholder fallback.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "In backend/main.mo, replace the dynamic/placeholder resource URL generation logic with a fixed, structured conditional mapping. For each supported skill (Public Speaking, Python, Excel, UI Design, Photography, Writing, and any other skills already in the dropdown), define a hardcoded array of 2–3 resource objects (title, URL, descriptor) for each of the 7 days. URLs must be real, publicly accessible links (e.g., official documentation pages, YouTube search URLs like https://www.youtube.com/results?search_query=..., freeCodeCamp articles, MDN docs, Canva design school, Coursera free previews, etc.) — no example.com or placeholder domains. The mapping must be purely conditional/static: no string interpolation producing fake URLs. Day themes must follow the existing progression (Day 1 = fundamentals, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final assessment). Skill-level (Beginner/Intermediate/Advanced) should influence which resource variant is selected where multiple options exist for the same day.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Update backend/migration.mo to ensure that any existing stored plans have their per-day resources array replaced or backfilled using the new fixed resource mapping when the canister is upgraded. Plans whose resources arrays still contain example.com URLs must be updated to use the new real resource links on upgrade.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "In backend/main.mo, replace all dynamic or placeholder resource URL generation logic with a fully hardcoded, structured conditional mapping. For each supported skill — Public Speaking, Python, Excel, UI Design, Photography, Writing — define a static array of exactly 2–3 resource objects (each with title, URL, and descriptor) for each of the 7 days. All URLs must be real, publicly accessible links such as official documentation pages (e.g., docs.python.org), YouTube search URLs (e.g., https://www.youtube.com/results?search_query=python+basics), freeCodeCamp articles, MDN Web Docs, Canva Design School, or Coursera free previews. No example.com, placeholder, or string-interpolated fake URLs are permitted. The conditional mapping must be purely static: skill name and skill level are used as keys to select the appropriate resource variant. Day themes must follow the existing progression: Day 1 = fundamentals/setup, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final assessment/wrap-up. Where multiple resource variants exist for the same day, skill level (Beginner / Intermediate / Advanced) must determine which variant is selected. For any skill not in the supported list (e.g., custom skill input), fall back to a set of generic but real learning resource links (e.g., YouTube search URL based on skill name, a freeCodeCamp or Khan Academy general learning link) rather than leaving the array empty.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Update backend/migration.mo so that on canister upgrade, any existing stored SprintPlans have their per-day resources arrays fully replaced using the new fixed resource mapping defined in REQ-25. Plans whose resources arrays contain example.com URLs, empty strings, or placeholder entries must be updated to the new real resource links. The migration must iterate over all stored plans, re-derive the correct skill/level/day resource mapping, and overwrite the resources field on each DayPlan accordingly.",
+      "reqIds": [
+        "REQ-26"
+      ],
       "status": "pending"
     }
   ],
