@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Zap, Loader2, Target, Clock, BarChart3, BookOpen, Sparkles } from 'lucide-react';
+import { Zap, Loader2, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -57,7 +57,7 @@ export default function SkillInputForm() {
   const [hoursPerDay, setHoursPerDay] = useState(2);
   const [skillLevel, setSkillLevel] = useState<SkillLevel | ''>('');
   const [desiredOutcome, setDesiredOutcome] = useState('');
-  const [error, setError] = useState('');
+  const [validationError, setValidationError] = useState('');
 
   const isCustom = selectedSkill === 'Custom';
   const effectiveSkill = isCustom ? customSkill.trim() : selectedSkill;
@@ -68,12 +68,22 @@ export default function SkillInputForm() {
     skillLevel !== '' &&
     desiredOutcome.trim().length > 0;
 
+  // Derive the displayed error: prefer mutation error over validation error
+  const mutationErrorMessage =
+    createPlan.error instanceof Error
+      ? createPlan.error.message
+      : createPlan.error
+      ? String(createPlan.error)
+      : '';
+
+  const displayedError = mutationErrorMessage || validationError;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setValidationError('');
 
     if (!isValid) {
-      setError('Fill in all fields to generate your sprint! 🚀');
+      setValidationError('Fill in all fields to generate your sprint! 🚀');
       return;
     }
 
@@ -85,9 +95,14 @@ export default function SkillInputForm() {
         outcome: desiredOutcome.trim(),
       });
       navigate({ to: '/plan/$planId', params: { planId: planId.toString() } });
-    } catch (err) {
-      setError('Failed to generate plan. Please try again.');
+    } catch {
+      // Error is already captured in createPlan.error — no need to set local state
     }
+  };
+
+  const handleRetry = () => {
+    setValidationError('');
+    createPlan.reset();
   };
 
   return (
@@ -139,7 +154,7 @@ export default function SkillInputForm() {
                     <button
                       key={skill.value}
                       type="button"
-                      onClick={() => setSelectedSkill(skill.value)}
+                      onClick={() => { setSelectedSkill(skill.value); handleRetry(); }}
                       className="px-3 py-2.5 rounded-2xl text-sm font-semibold text-left transition-all duration-200 border-2"
                       style={{
                         background: isSelected
@@ -224,7 +239,7 @@ export default function SkillInputForm() {
                     <button
                       key={level}
                       type="button"
-                      onClick={() => setSkillLevel(level)}
+                      onClick={() => { setSkillLevel(level); handleRetry(); }}
                       className="flex flex-col items-center gap-1.5 p-4 rounded-2xl border-2 transition-all duration-200 font-semibold"
                       style={{
                         background: isSelected ? config.gradient : 'white',
@@ -254,7 +269,7 @@ export default function SkillInputForm() {
               <Textarea
                 placeholder="e.g. I want to build a simple web app, land a freelance gig, or impress my team with data dashboards..."
                 value={desiredOutcome}
-                onChange={(e) => setDesiredOutcome(e.target.value)}
+                onChange={(e) => { setDesiredOutcome(e.target.value); if (validationError) setValidationError(''); }}
                 rows={3}
                 className="rounded-2xl border-2 font-medium resize-none"
                 style={{ borderColor: 'oklch(0.72 0.22 50 / 0.3)' }}
@@ -264,12 +279,44 @@ export default function SkillInputForm() {
               </p>
             </div>
 
-            {/* Error */}
-            {error && (
-              <div className="flex items-center gap-2 p-3 rounded-2xl text-sm font-medium animate-fade-in"
-                style={{ background: 'oklch(0.62 0.28 350 / 0.1)', border: '1.5px solid oklch(0.62 0.28 350 / 0.3)', color: 'oklch(0.45 0.28 350)' }}
+            {/* Error display */}
+            {displayedError && (
+              <div
+                className="rounded-2xl p-4 animate-fade-in"
+                style={{
+                  background: 'oklch(0.62 0.28 350 / 0.08)',
+                  border: '1.5px solid oklch(0.62 0.28 350 / 0.35)',
+                }}
               >
-                ⚠️ {error}
+                <div className="flex items-start gap-3">
+                  <AlertCircle
+                    className="w-5 h-5 mt-0.5 shrink-0"
+                    style={{ color: 'oklch(0.45 0.28 350)' }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold" style={{ color: 'oklch(0.38 0.28 350)' }}>
+                      {mutationErrorMessage ? 'Plan generation failed' : 'Missing information'}
+                    </p>
+                    <p className="text-sm mt-0.5 break-words" style={{ color: 'oklch(0.45 0.28 350)' }}>
+                      {displayedError}
+                    </p>
+                  </div>
+                  {mutationErrorMessage && (
+                    <button
+                      type="button"
+                      onClick={handleRetry}
+                      className="shrink-0 flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-xl transition-all"
+                      style={{
+                        background: 'oklch(0.62 0.28 350 / 0.15)',
+                        color: 'oklch(0.38 0.28 350)',
+                        border: '1px solid oklch(0.62 0.28 350 / 0.3)',
+                      }}
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Retry
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 

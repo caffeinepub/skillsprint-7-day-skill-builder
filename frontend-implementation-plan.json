@@ -1,6 +1,39 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace dynamic resource URLs with fixed, real-URL conditional mapping per skill and day",
-  "requirements": []
+  "title": "Fix Bonus Resource link with valid working HTTPS URLs",
+  "requirements": [
+    {
+      "id": "REQ-33",
+      "summary": "Update PlanResults.tsx to render Bonus Resource link with proper href binding, target='_blank', rel='noopener noreferrer', and hide the card if URL is missing or empty",
+      "acceptanceCriteria": [
+        "The Bonus Resource anchor's href is set to bonusResource.url from the plan data.",
+        "The anchor has target='_blank' and rel='noopener noreferrer'.",
+        "If bonusResource.url is empty or undefined, the Bonus Resource card is not rendered.",
+        "Clicking the link opens the correct URL in a new tab in incognito mode."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/PlanResults.tsx",
+          "operation": "modify",
+          "description": "Update the Bonus Resource section to bind the anchor href to bonusResource.url, add target='_blank' and rel='noopener noreferrer' attributes, and conditionally render the Bonus Resource card only when bonusResource.url is present and non-empty. Ensure the href is never empty, undefined, or '#'."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Update DownloadPdfButton.tsx to render bonusResource.url as visible text in the PDF template alongside the title",
+      "acceptanceCriteria": [
+        "The PDF/print output includes the bonusResource.title and its URL as readable text.",
+        "The URL shown in the PDF begins with 'https://' and matches the plan data's bonusResource.url."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DownloadPdfButton.tsx",
+          "operation": "modify",
+          "description": "Update the Bonus Resource section in the PDF template markup to display both bonusResource.title and bonusResource.url as visible text. Ensure the URL is rendered as plain text so it appears in the printed/PDF output and begins with 'https://'."
+        }
+      ]
+    }
+  ]
 }

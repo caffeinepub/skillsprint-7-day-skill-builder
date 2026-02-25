@@ -6,9 +6,86 @@ interface DownloadPdfButtonProps {
   plan: SprintPlan;
 }
 
+// ---------------------------------------------------------------------------
+// Bonus resource URL sanitization (mirrors PlanResults.tsx logic)
+// ---------------------------------------------------------------------------
+
+function getSafeBonusResourceUrl(url: string, skillName: string): string {
+  if (!url || !url.startsWith('https://')) {
+    return `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(skillName)}`;
+  }
+  const wikiProgLangPattern = /^https:\/\/en\.wikipedia\.org\/wiki\/(.+)_programming_language$/;
+  if (wikiProgLangPattern.test(url)) {
+    const match = url.match(wikiProgLangPattern);
+    const skill = match ? decodeURIComponent(match[1]) : skillName;
+    return `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(skill)}`;
+  }
+  return url;
+}
+
+const SKILL_RESOURCE_MAP: Record<string, { title: string; url: string }> = {
+  javascript: { title: 'MDN JavaScript Guide (Official)', url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide' },
+  python: { title: 'Python Official Documentation', url: 'https://docs.python.org/3/tutorial/' },
+  html: { title: 'MDN HTML Guide (Official)', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML' },
+  css: { title: 'MDN CSS Guide (Official)', url: 'https://developer.mozilla.org/en-US/docs/Web/CSS' },
+  java: { title: 'Java Documentation (Oracle)', url: 'https://docs.oracle.com/en/java/' },
+  react: { title: 'React Official Documentation', url: 'https://react.dev/' },
+  git: { title: 'Git Official Documentation', url: 'https://git-scm.com/doc' },
+  rust: { title: 'Rust Official Documentation', url: 'https://doc.rust-lang.org/book/' },
+  typescript: { title: 'TypeScript Official Documentation', url: 'https://www.typescriptlang.org/docs/' },
+  motoko: { title: 'Motoko Official Documentation', url: 'https://internetcomputer.org/docs/current/developer-docs/backend/motoko/guide' },
+  sql: { title: 'SQL Tutorial – W3Schools', url: 'https://www.w3schools.com/sql/' },
+  excel: { title: 'Microsoft Excel Help & Learning', url: 'https://support.microsoft.com/en-us/excel' },
+  nodejs: { title: 'Node.js Official Documentation', url: 'https://nodejs.org/en/docs/' },
+  'node.js': { title: 'Node.js Official Documentation', url: 'https://nodejs.org/en/docs/' },
+  vue: { title: 'Vue.js Official Documentation', url: 'https://vuejs.org/guide/introduction.html' },
+  angular: { title: 'Angular Official Documentation', url: 'https://angular.dev/overview' },
+  docker: { title: 'Docker Official Documentation', url: 'https://docs.docker.com/get-started/' },
+  kubernetes: { title: 'Kubernetes Official Documentation', url: 'https://kubernetes.io/docs/home/' },
+  go: { title: 'Go Official Documentation', url: 'https://go.dev/doc/' },
+  golang: { title: 'Go Official Documentation', url: 'https://go.dev/doc/' },
+  swift: { title: 'Swift Official Documentation', url: 'https://www.swift.org/documentation/' },
+  kotlin: { title: 'Kotlin Official Documentation', url: 'https://kotlinlang.org/docs/home.html' },
+  php: { title: 'PHP Official Documentation', url: 'https://www.php.net/docs.php' },
+  ruby: { title: 'Ruby Official Documentation', url: 'https://www.ruby-lang.org/en/documentation/' },
+  'c++': { title: 'C++ Reference', url: 'https://en.cppreference.com/w/cpp' },
+  'c#': { title: 'C# Documentation (Microsoft)', url: 'https://learn.microsoft.com/en-us/dotnet/csharp/' },
+  flutter: { title: 'Flutter Official Documentation', url: 'https://docs.flutter.dev/' },
+  dart: { title: 'Dart Official Documentation', url: 'https://dart.dev/guides' },
+  nextjs: { title: 'Next.js Official Documentation', url: 'https://nextjs.org/docs' },
+  'next.js': { title: 'Next.js Official Documentation', url: 'https://nextjs.org/docs' },
+  tailwind: { title: 'Tailwind CSS Official Documentation', url: 'https://tailwindcss.com/docs' },
+  tailwindcss: { title: 'Tailwind CSS Official Documentation', url: 'https://tailwindcss.com/docs' },
+  graphql: { title: 'GraphQL Official Documentation', url: 'https://graphql.org/learn/' },
+  mongodb: { title: 'MongoDB Official Documentation', url: 'https://www.mongodb.com/docs/' },
+  postgresql: { title: 'PostgreSQL Official Documentation', url: 'https://www.postgresql.org/docs/' },
+  mysql: { title: 'MySQL Official Documentation', url: 'https://dev.mysql.com/doc/' },
+  aws: { title: 'AWS Documentation', url: 'https://docs.aws.amazon.com/' },
+  linux: { title: 'Linux Documentation Project', url: 'https://tldp.org/' },
+  bash: { title: 'Bash Reference Manual (GNU)', url: 'https://www.gnu.org/software/bash/manual/' },
+  figma: { title: 'Figma Help Center', url: 'https://help.figma.com/hc/en-us' },
+  photoshop: { title: 'Adobe Photoshop Tutorials', url: 'https://helpx.adobe.com/photoshop/tutorials.html' },
+};
+
+function getReliableBonusResource(
+  skillName: string,
+  bonusResource: { title: string; url: string }
+): { title: string; url: string } {
+  const key = skillName.toLowerCase().trim();
+  if (SKILL_RESOURCE_MAP[key]) return SKILL_RESOURCE_MAP[key];
+  const safeUrl = getSafeBonusResourceUrl(bonusResource.url, skillName);
+  return { title: bonusResource.title, url: safeUrl };
+}
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
 export default function DownloadPdfButton({ plan }: DownloadPdfButtonProps) {
+  const bonusResource = getReliableBonusResource(plan.skillName, plan.bonusResource);
+
   const handleDownload = () => {
-    const printContent = buildPrintContent(plan);
+    const printContent = buildPrintContent(plan, bonusResource);
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
       alert('Please allow popups to download the PDF.');
@@ -40,12 +117,13 @@ export default function DownloadPdfButton({ plan }: DownloadPdfButtonProps) {
   );
 }
 
-function buildPrintContent(plan: SprintPlan): string {
-  const days = plan.days.map((day, i) => {
-    const resources = day.resources && day.resources.length > 0
-      ? `<div class="resources"><strong>📚 Study Resources:</strong><ul>${day.resources.map(r => `<li><a href="${r.url}" target="_blank">${r.title}</a> — ${r.description}</li>`).join('')}</ul></div>`
-      : '';
-    return `
+function buildPrintContent(
+  plan: SprintPlan,
+  bonusResource: { title: string; url: string }
+): string {
+  const days = plan.days
+    .map(
+      (day, i) => `
     <div class="day-card">
       <div class="day-header">Day ${i + 1}</div>
       <table>
@@ -55,10 +133,10 @@ function buildPrintContent(plan: SprintPlan): string {
         <tr><td class="label">📦 Deliverable</td><td>${day.deliverable}</td></tr>
         <tr><td class="label">⏰ Estimated Time</td><td>${Number(day.estimatedTime)} hour(s)</td></tr>
       </table>
-      ${resources}
     </div>
-  `;
-  }).join('');
+  `
+    )
+    .join('');
 
   const mistakes = plan.commonMistakes.map((m) => `<li>${m}</li>`).join('');
 
@@ -84,15 +162,12 @@ function buildPrintContent(plan: SprintPlan): string {
         table { width: 100%; border-collapse: collapse; }
         td { padding: 7px 14px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
         td.label { font-weight: 700; color: #4c1d95; width: 160px; background: #faf5ff; font-size: 11px; }
-        .resources { padding: 10px 14px; background: #f0fdf4; border-top: 1px solid #d1fae5; }
-        .resources ul { padding-left: 16px; margin-top: 4px; }
-        .resources li { margin-bottom: 3px; font-size: 12px; color: #374151; }
-        .resources a { color: #7c3aed; }
         .result-box { background: linear-gradient(135deg, #fefce8, #fff7ed); border: 1px solid #fde68a; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; }
         .mistakes-list { padding-left: 20px; }
         .mistakes-list li { margin-bottom: 4px; color: #db2777; font-weight: 500; }
         .bonus { background: linear-gradient(135deg, #f0f9ff, #f5f3ff); border: 1px solid #c4b5fd; border-radius: 12px; padding: 12px 16px; }
-        .bonus a { color: #7c3aed; font-weight: 600; }
+        .bonus-title { font-weight: 700; color: #4c1d95; margin-bottom: 6px; }
+        .bonus-url { color: #7c3aed; font-size: 12px; word-break: break-all; }
         .footer { margin-top: 32px; padding-top: 12px; border-top: 2px solid #e9d5ff; color: #9ca3af; font-size: 11px; text-align: center; }
         @media print { body { padding: 16px; } }
       </style>
@@ -123,8 +198,8 @@ function buildPrintContent(plan: SprintPlan): string {
 
       <h2>🎁 Bonus Resource</h2>
       <div class="bonus">
-        <strong>${plan.bonusResource.title}</strong><br/>
-        <a href="${plan.bonusResource.url}" target="_blank">${plan.bonusResource.url}</a>
+        <div class="bonus-title">${bonusResource.title}</div>
+        <div class="bonus-url">${bonusResource.url}</div>
       </div>
 
       <div class="footer">Generated by 🚀 SkillSprint · caffeine.ai</div>

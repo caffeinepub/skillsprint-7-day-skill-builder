@@ -2,22 +2,15 @@ import Text "mo:core/Text";
 import Nat "mo:core/Nat";
 import Array "mo:core/Array";
 import Map "mo:core/Map";
-import Runtime "mo:core/Runtime";
 import Iter "mo:core/Iter";
+import Runtime "mo:core/Runtime";
 
 import MixinStorage "blob-storage/Mixin";
 import Migration "migration";
 
-// Apply migration on upgrade!
 (with migration = Migration.run)
 actor {
   include MixinStorage();
-
-  type Resource = {
-    title : Text;
-    url : Text;
-    description : Text;
-  };
 
   type DayPlan = {
     objectives : Text;
@@ -25,7 +18,6 @@ actor {
     practiceExercise : Text;
     deliverable : Text;
     estimatedTime : Nat;
-    resources : [Resource];
   };
 
   type BonusResource = {
@@ -65,156 +57,164 @@ actor {
 
   var nextPlanId = 1;
 
-  func getResourcesForDay(skill : Text, level : Text, day : Nat) : [Resource] {
-    switch (skill, level, day) {
-      // Public Speaking
-      case ("public speaking", "beginner", 0) {
-        [
-          {
-            title = "Intro to Public Speaking";
-            url = "https://www.youtube.com/results?search_query=intro+to+public+speaking";
-            description = "YouTube curated introduction playlist.";
-          },
-          {
-            title = "Overcoming Stage Fright";
-            url = "https://www.mindtools.com/a5ka4l1/overcoming-stage-fright";
-            description = "MindTools article on confidence building.";
-          },
-        ];
+  func generateDayPlan(skillName : Text, level : Text, hours : Nat, dayIndex : Nat, outcome : Text) : DayPlan {
+    switch (dayIndex) {
+      case (1) {
+        {
+          objectives = "Understand the fundamentals of " # skillName # " at a " # level # " level.";
+          actionTask = "Familiarize yourself with core terminologies and basic features of " # skillName # ".";
+          practiceExercise = "Complete 'Getting Started' exercises using online resources.";
+          deliverable = "Summarize findings in a document and submit setup screenshot.";
+          estimatedTime = hours;
+        };
       };
-      case ("public speaking", "intermediate", 0) {
-        [
-          {
-            title = "Effective Communication";
-            url = "https://www.coursera.org/learn/wharton-communication-skills";
-            description = "Coursera course preview on communication strategies.";
-          },
-        ];
+      case (2) {
+        {
+          objectives = "Dive deeper into the first core concept of " # skillName # ".";
+          actionTask = "Study the underlying principles and applications of core concept A.";
+          practiceExercise = "Write code samples or exercises demonstrating concept A.";
+          deliverable = "Submit annotated examples showcasing understanding.";
+          estimatedTime = hours + 1;
+        };
       };
-      case ("public speaking", "advanced", 0) {
-        [
-          {
-            title = "Advanced Presentation Techniques";
-            url = "https://hbr.org/2019/04/how-to-give-a-killer-presentation";
-            description = "Harvard Business Review article on advanced public speaking.";
-          },
-        ];
+      case (3) {
+        {
+          objectives = "Study the second major building block of " # skillName # ".";
+          actionTask = "Explore documentation and tutorials on core concept B.";
+          practiceExercise = "Complete practical exercises for concept B.";
+          deliverable = "Submit a comparison of concepts A and B with code snippets.";
+          estimatedTime = hours + 1;
+        };
       };
-      case ("public speaking", _, 1) {
-        [
-          {
-            title = "Structure a Speech";
-            url = "https://examples.yourdictionary.com/examples-of-speech";
-            description = "Examples and templates for structuring speeches.";
-          },
-        ];
+      case (4) {
+        {
+          objectives = "Integrate core concepts through hands-on tasks.";
+          actionTask = "Work on a project combining concepts A and B.";
+          practiceExercise = "Reproduce real-world examples using both concepts.";
+          deliverable = "Submit project preview and explanation.";
+          estimatedTime = hours + 2;
+        };
       };
-      // Python
-      case ("python", "beginner", 0) {
-        [
-          {
-            title = "Python Official Tutorials";
-            url = "https://docs.python.org/3/tutorial/index.html";
-            description = "Guided fundamentals by Python Software Foundation.";
-          },
-          {
-            title = "Beginner Python Exercises";
-            url = "https://exercism.org/tracks/python/exercises";
-            description = "Free coding challenges on Exercism.";
-          },
-        ];
+      case (5) {
+        {
+          objectives = "Advance skills with intermediate techniques in " # skillName # ".";
+          actionTask = "Study advanced tutorials and case studies.";
+          practiceExercise = "Apply new skills to projects.";
+          deliverable = "Submit presentation of progress and challenges.";
+          estimatedTime = hours + 2;
+        };
       };
-      case ("python", "intermediate", 3) {
-        [
-          {
-            title = "Python Project Templates";
-            url = "https://realpython.com/tutorials/projects/";
-            description = "RealPython project guides.";
-          },
-          {
-            title = "Automate the Boring Stuff";
-            url = "https://automatetheboringstuff.com/";
-            description = "Automation projects using Python.";
-          },
-        ];
+      case (6) {
+        {
+          objectives = "Consolidate skills with a final project.";
+          actionTask = "Review all content and fill knowledge gaps.";
+          practiceExercise = "Document final project and challenges.";
+          deliverable = "Submit completed project and report.";
+          estimatedTime = hours + 3;
+        };
       };
-      // Excel
-      case ("excel", _, 0) {
-        [
-          {
-            title = "Excel Basics";
-            url = "https://exceljet.net/tutorial";
-            description = "Step-by-step guides on Excel fundamentals.";
-          },
-        ];
+      case (7) {
+        {
+          objectives = "Demonstrate accomplishment of the final outcome.";
+          actionTask = "Prepare for project submission.";
+          practiceExercise = "Refine results to meet standards.";
+          deliverable = "Submit final project demonstrating mastery.";
+          estimatedTime = hours;
+        };
       };
-      // UI Design
-      case ("ui design", _, 0) {
-        [
-          {
-            title = "UI Design Principles";
-            url = "https://developer.mozilla.org/en-US/docs/Learn/Forms";
-            description = "MDN Web Docs on UI design forms.";
-          },
-        ];
+      case (_) {
+        Runtime.trap("Invalid dayIndex: " # dayIndex.toText());
       };
-      // Photography
-      case ("photography", _, 0) {
-        [
-          {
-            title = "Beginner Photography Guide";
-            url = "https://www.photographytalk.com/learn-photography";
-            description = "Photography Talk articles for beginners.";
-          },
-        ];
-      };
-      // Writing
-      case ("writing", _, 0) {
-        [
-          {
-            title = "Creative Writing Basics";
-            url = "https://www.freecodecamp.org/news/category/writing/";
-            description = "freeCodeCamp resources on writing.";
-          },
-        ];
-      };
-      // Generic fallback for custom skills
-      case (_, _, 0) {
-        [
-          {
-            title = "Getting Started Guide";
-            url = "https://www.codecademy.com/learn";
-            description = "Codecademy resources for various skills.";
-          },
-        ];
-      };
-      // FINAL SWITCH CASE for case not handled
-      case (_) { [] };
     };
   };
 
-  func generateDayPlan(skillName : Text, level : Text, hours : Nat, dayIndex : Nat) : DayPlan {
-    {
-      objectives = "Objectives for day " # dayIndex.toText();
-      actionTask = "Complete tasks for day " # dayIndex.toText();
-      practiceExercise = "Practice exercises for day " # dayIndex.toText();
-      deliverable = "Submit deliverables for day " # dayIndex.toText();
-      estimatedTime = hours + 1;
-      resources = getResourcesForDay(skillName, level, dayIndex);
-    };
+  func generateAlignedDayPlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text, dayIndex : Nat) : DayPlan {
+    generateDayPlan(skillName, level, hoursPerDay, dayIndex + 1, outcome);
   };
 
-  func generateAllDays(skillName : Text, hoursPerDay : Nat, level : Text, _outcome : Text) : [DayPlan] {
+  func generateAllDays(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : [DayPlan] {
     Array.tabulate<DayPlan>(
       7,
       func(dayIndex) {
-        generateDayPlan(skillName, level, hoursPerDay, dayIndex);
+        generateAlignedDayPlan(skillName, hoursPerDay, level, outcome, dayIndex);
       },
     );
   };
 
+  func getValidBonusResource(skillName : Text) : BonusResource {
+    switch (skillName.toLower()) {
+      case ("javascript") {
+        {
+          title = "MDN JavaScript Guide (Official)";
+          url = "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide";
+        };
+      };
+      case ("python") {
+        {
+          title = "Python Official Documentation";
+          url = "https://docs.python.org/3/tutorial/";
+        };
+      };
+      case ("html") {
+        {
+          title = "MDN HTML Guide (Official)";
+          url = "https://developer.mozilla.org/en-US/docs/Web/HTML";
+        };
+      };
+      case ("css") {
+        {
+          title = "MDN CSS Guide (Official)";
+          url = "https://developer.mozilla.org/en-US/docs/Web/CSS";
+        };
+      };
+      case ("java") {
+        {
+          title = "Java Documentation (Oracle)";
+          url = "https://docs.oracle.com/en/java/";
+        };
+      };
+      case ("react") {
+        {
+          title = "React Official Documentation";
+          url = "https://react.dev/";
+        };
+      };
+      case ("git") {
+        {
+          title = "Git Official Documentation";
+          url = "https://git-scm.com/doc";
+        };
+      };
+      case ("rust") {
+        {
+          title = "Rust Official Documentation";
+          url = "https://doc.rust-lang.org/book/";
+        };
+      };
+      case ("typescript") {
+        {
+          title = "Typescript Official Documentation";
+          url = "https://www.typescriptlang.org/docs/";
+        };
+      };
+      case ("motoko") {
+        {
+          title = "Motoko Official Documentation";
+          url = "https://internetcomputer.org/docs/current/developer-docs/backend/motoko/guide";
+        };
+      };
+      case (_) {
+        {
+          title = "Wikipedia Search for " # skillName;
+          url = "https://en.wikipedia.org/wiki/" # skillName # "_programming_language";
+        };
+      };
+    };
+  };
+
   func generatePlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : SprintPlan {
     let days = generateAllDays(skillName, hoursPerDay, level, outcome);
+    let bonusResource = getValidBonusResource(skillName);
     {
       planId = nextPlanId;
       skillName;
@@ -226,15 +226,12 @@ actor {
       endOfWeekResult = "Definitive result for " # skillName # ".";
       commonMistakes = [
         "Neglecting core concepts",
-        "Poor maintenance of best practices",
-        "Ignoring performance optimization",
-        "Lack of thorough reviews",
+        "Poor practices maintenance",
+        "Ignoring optimization",
+        "Lack of reviews",
         "Inadequate documentation",
       ];
-      bonusResource = {
-        title = "Advanced Resources in " # skillName # " Techniques";
-        url = "http://advanced-resources.example.com";
-      };
+      bonusResource = bonusResource;
       unlockedStatus = false;
     };
   };

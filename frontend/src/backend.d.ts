@@ -22,7 +22,6 @@ export interface SprintPlan {
 }
 export interface DayPlan {
     deliverable: string;
-    resources: Array<Resource>;
     actionTask: string;
     practiceExercise: string;
     estimatedTime: bigint;
@@ -31,11 +30,6 @@ export interface DayPlan {
 export interface BonusResource {
     url: string;
     title: string;
-}
-export interface Resource {
-    url: string;
-    title: string;
-    description: string;
 }
 export interface PublicPlanView {
     endOfWeekResult: string;

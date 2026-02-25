@@ -104,7 +104,6 @@ export interface SprintPlan {
 }
 export interface DayPlan {
     deliverable: string;
-    resources: Array<Resource>;
     actionTask: string;
     practiceExercise: string;
     estimatedTime: bigint;
@@ -116,11 +115,6 @@ export interface BonusResource {
 }
 export interface _CaffeineStorageRefillInformation {
     proposed_top_up_amount?: bigint;
-}
-export interface Resource {
-    url: string;
-    title: string;
-    description: string;
 }
 export interface _CaffeineStorageCreateCertificateResult {
     method: string;

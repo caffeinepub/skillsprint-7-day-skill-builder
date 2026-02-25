@@ -1,4 +1,43 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-in-frontend-src-pages-planresults-tsx-ensure-the-bonus-resource-anchor-element-has-its-href-attribute-bound-to-the-bonusresource-url-value-from-the-plan-data-includes-target-blank-and-rel-noopener-noreferrer-and-that-the-href-is-never-empty-undefined-or-if-bonusresource-url-is-missing-or-empty-hide-the-bonus-resource-card-entirely-rather-than-rendering-a-broken-link",
+      "featureTitle": "In frontend/src/pages/PlanResults.tsx, ensure the Bonus Resource anchor element has its href attribute bound to the bonusResource.url value from the plan data, includes target='_blank' and rel='noopener noreferrer', and that the href is never empty, undefined, or '#'. If bonusResource.url is missing or empty, hide the Bonus Resource card entirely rather than rendering a broken link.",
+      "files": [
+        "frontend/src/pages/PlanResults.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-33"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-frontend-src-components-downloadpdfbutton-tsx-update-the-bonus-resource-section-of-the-pdf-template-to-render-the-bonusresource-url-as-a-visible-text-url-alongside-the-title-so-the-pdf-output-also-reflects-the-valid-link",
+      "featureTitle": "In frontend/src/components/DownloadPdfButton.tsx, update the Bonus Resource section of the PDF template to render the bonusResource.url as a visible text URL alongside the title, so the PDF output also reflects the valid link.",
+      "files": [
+        "frontend/src/components/DownloadPdfButton.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-34"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

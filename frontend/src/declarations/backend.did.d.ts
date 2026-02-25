@@ -13,7 +13,6 @@ import type { Principal } from '@icp-sdk/core/principal';
 export interface BonusResource { 'url' : string, 'title' : string }
 export interface DayPlan {
   'deliverable' : string,
-  'resources' : Array<Resource>,
   'actionTask' : string,
   'practiceExercise' : string,
   'estimatedTime' : bigint,
@@ -30,11 +29,6 @@ export interface PublicPlanView {
   'desiredOutcome' : string,
   'skillOverview' : string,
   'firstDay' : DayPlan,
-}
-export interface Resource {
-  'url' : string,
-  'title' : string,
-  'description' : string,
 }
 export interface SprintPlan {
   'endOfWeekResult' : string,

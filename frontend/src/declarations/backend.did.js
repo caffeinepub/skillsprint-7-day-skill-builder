@@ -23,14 +23,8 @@ export const BonusResource = IDL.Record({
   'url' : IDL.Text,
   'title' : IDL.Text,
 });
-export const Resource = IDL.Record({
-  'url' : IDL.Text,
-  'title' : IDL.Text,
-  'description' : IDL.Text,
-});
 export const DayPlan = IDL.Record({
   'deliverable' : IDL.Text,
-  'resources' : IDL.Vec(Resource),
   'actionTask' : IDL.Text,
   'practiceExercise' : IDL.Text,
   'estimatedTime' : IDL.Nat,
@@ -119,14 +113,8 @@ export const idlFactory = ({ IDL }) => {
     'topped_up_amount' : IDL.Opt(IDL.Nat),
   });
   const BonusResource = IDL.Record({ 'url' : IDL.Text, 'title' : IDL.Text });
-  const Resource = IDL.Record({
-    'url' : IDL.Text,
-    'title' : IDL.Text,
-    'description' : IDL.Text,
-  });
   const DayPlan = IDL.Record({
     'deliverable' : IDL.Text,
-    'resources' : IDL.Vec(Resource),
     'actionTask' : IDL.Text,
     'practiceExercise' : IDL.Text,
     'estimatedTime' : IDL.Nat,

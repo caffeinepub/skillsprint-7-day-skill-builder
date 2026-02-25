@@ -1,66 +1,41 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T18:37:23.916Z",
-  "summary": "The diff adds backend/migration.mo and modifies backend/main.mo to introduce a static resource mapping function. However, the implementation is severely incomplete relative to REQ-25 and REQ-26. Only a handful of skill/level/day combinations are defined — far fewer than the required 2–3 resources for all 6 supported skills × 7 days × skill levels. The migration logic exists structurally but falls back to empty arrays for most combinations, violating the core acceptance criteria.",
-  "missing_requirements": [
+  "generatedAt": "2026-02-25T19:37:54.716Z",
+  "summary": "The diff implements all three requirements (REQ-32, REQ-33, REQ-34) with hardcoded lookup tables in backend/main.mo, frontend URL sanitization in PlanResults.tsx, and visible URL text in DownloadPdfButton.tsx. All core acceptance criteria appear satisfied. Minor notes: the backend lookup table in migration.mo has a limited set of skills compared to the larger frontend SKILL_RESOURCE_MAP, and the Wikipedia fallback URL pattern could still be generated for unknown skills, but the frontend sanitizes these.",
+  "missing_requirements": [],
+  "hallucinated_features": [
     {
-      "id": "REQ-25",
-      "requirement": "Every supported skill (Public Speaking, Python, Excel, UI Design, Photography, Writing) has exactly 2–3 resource objects defined per day (Days 1–7) in the backend mapping.",
-      "reason": "The diff only defines a small handful of switch cases. The vast majority of skill+level+day combinations fall through to the default case returning empty arrays, violating the AC requiring non-empty resources for all 7 days of each skill.",
+      "description": "A frontend SKILL_RESOURCE_MAP with ~30+ skills (SQL, Excel, Node.js, Vue, Angular, Docker, Kubernetes, Go, Swift, Kotlin, PHP, Ruby, C++, C#, Flutter, Dart, Next.js, Tailwind, etc.) was added in both PlanResults.tsx and DownloadPdfButton.tsx, significantly beyond the ~10 skills defined in the backend lookup table.",
+      "reason": "The build request only required a hardcoded lookup table of verified real URLs relevant to the plan's skillName. The frontend expanded this to a much larger map not described in the requirements.",
       "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
+        "frontend/src/pages/PlanResults.tsx",
+        "frontend/src/components/DownloadPdfButton.tsx"
       ]
     },
     {
-      "id": "REQ-25",
-      "requirement": "Custom/unsupported skills fall back to a generic set of real resource links rather than an empty array.",
-      "reason": "The wildcard default case in both main.mo and migration.mo returns an empty array for any unsupported/custom skill, directly violating the requirement for a generic real-URL fallback.",
-      "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "requirement": "All 7 days for each skill return a non-empty resources array when a plan is fetched.",
-      "reason": "Because most day indices for most skills hit the wildcard default and return empty arrays, the vast majority of days across all skills will return empty resource arrays.",
-      "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "requirement": "Skill level (Beginner/Intermediate/Advanced) influences resource selection where multiple variants are defined for the same skill+day.",
-      "reason": "Only a few cases distinguish by level (e.g., public speaking day 0 has beginner/intermediate/advanced variants). For Python, Excel, UI Design, Photography, and Writing, level-based differentiation is absent or minimal across most days.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "requirement": "Each day in every stored plan has 2–3 resource entries populated with real URLs from the new fixed mapping after migration.",
-      "reason": "migration.mo getResourcesForDay has the same sparse switch table as main.mo and defaults to empty arrays, so migrated plans will still have empty resource arrays for most days.",
+      "description": "A backend/migration.mo file was added to migrate existing stored plans to update their bonusResource fields using a migration runner pattern.",
+      "reason": "The build request only asked to update the bonusResource URL generation logic in backend/main.mo for newly generated plans. A migration module for existing stored plans was not requested.",
       "evidence": [
         "backend/migration.mo"
       ]
     },
     {
-      "id": "REQ-26",
-      "requirement": "Plans with unsupported/custom skill names receive the generic fallback resource links rather than empty arrays.",
-      "reason": "migration.mo default case returns an empty array for unrecognized skills, providing no fallback resources.",
+      "description": "A getSafeBonusResourceUrl() sanitization function and getReliableBonusResource() frontend fallback lookup were added to both PlanResults.tsx and DownloadPdfButton.tsx to handle cases where the backend returns a potentially broken Wikipedia URL.",
+      "reason": "REQ-33 asked for href binding to bonusResource.url and hiding the card if empty/undefined, but did not specify a client-side URL sanitization or override layer. This is an extra defensive mechanism not explicitly requested.",
       "evidence": [
-        "backend/migration.mo"
+        "frontend/src/pages/PlanResults.tsx",
+        "frontend/src/components/DownloadPdfButton.tsx"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.82,
+  "confidence": 0.8,
   "changed_files": [
     "backend/main.mo",
     "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/DownloadPdfButton.tsx",
+    "frontend/src/pages/PlanResults.tsx",
     "project_state.json"
   ]
 }
