@@ -7,17 +7,34 @@ function extractErrorMessage(err: unknown): string {
   if (typeof err === 'string') return err;
   if (err instanceof Error) {
     const msg = err.message;
-    // IC/Motoko rejection errors often contain the trap message after "Reject text:"
+
+    // IC/Motoko rejection errors — try multiple known patterns
+    // Pattern: "Reject text: <message>"
     const rejectMatch = msg.match(/Reject text:\s*(.+?)(?:\n|$)/i);
     if (rejectMatch) return rejectMatch[1].trim();
-    // Also check for "Error from Canister" pattern
+
+    // Pattern: "Error from Canister ...: <message>"
     const canisterMatch = msg.match(/Error from Canister[^:]*:\s*(.+?)(?:\n|$)/i);
     if (canisterMatch) return canisterMatch[1].trim();
+
+    // Pattern: "trapped explicitly: <message>"
+    const trapMatch = msg.match(/trapped explicitly:\s*(.+?)(?:\n|$)/i);
+    if (trapMatch) return trapMatch[1].trim();
+
+    // Pattern: "Call failed ...: <message>" (generic IC call failure)
+    const callFailedMatch = msg.match(/Call failed[^:]*:\s*(.+?)(?:\n|$)/i);
+    if (callFailedMatch) return callFailedMatch[1].trim();
+
+    // Pattern: "IC0503" or similar IC error codes followed by message
+    const icCodeMatch = msg.match(/IC\d+[^:]*:\s*(.+?)(?:\n|$)/i);
+    if (icCodeMatch) return icCodeMatch[1].trim();
+
     return msg;
   }
   if (typeof err === 'object' && err !== null) {
     const obj = err as Record<string, unknown>;
     if (typeof obj['message'] === 'string') return obj['message'];
+    if (typeof obj['reject_message'] === 'string') return obj['reject_message'];
   }
   return String(err);
 }
@@ -44,7 +61,12 @@ export function useCreatePlan() {
         planId = await actor.createPlan(skillName, BigInt(hoursPerDay), level, outcome);
       } catch (err) {
         const message = extractErrorMessage(err);
-        throw new Error(message);
+        // Provide a user-friendly fallback if the raw message is too technical
+        const userMessage =
+          message && message.length > 0 && message.length < 300
+            ? message
+            : 'Plan generation failed. Please try again.';
+        throw new Error(userMessage);
       }
       if (planId === undefined || planId === null) {
         throw new Error('Plan creation failed: no plan ID returned from the server.');

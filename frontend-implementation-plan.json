@@ -1,26 +1,27 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace UPI QR code with uploaded user image in PaywallModal",
+  "title": "Fix plan generation failure — debug and resolve backend trap/error in createPlan",
   "requirements": [
     {
-      "id": "REQ-38",
-      "summary": "Replace the existing QR code in PaywallModal with the uploaded UPI QR code image showing NIDHI AESTICARE and UPI ID nidhi.aesticare@okhdfcbank",
+      "id": "REQ-40",
+      "summary": "Fix error handling in frontend plan creation flow to properly surface backend errors and prevent silent failures",
       "acceptanceCriteria": [
-        "The file frontend/public/assets/generated/upi-qr.png exists and contains the uploaded UPI QR code image showing 'NIDHI AESTICARE' and UPI ID: nidhi.aesticare@okhdfcbank.",
-        "The PaywallModal renders this image as the QR code using the path /assets/generated/upi-qr.png.",
-        "The QR code image is clearly visible and not cropped or distorted in the modal."
+        "When the backend returns an #err variant, the error message from the variant payload is displayed to the user on the SkillInputForm page.",
+        "When a network or call-level error occurs, a clear human-readable fallback error message is shown.",
+        "No silent navigation to the PlanResults page occurs when plan generation has failed.",
+        "The 'Generate My Sprint' button re-enables after an error so the user can retry."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/upi-qr.png",
-          "operation": "create",
-          "description": "Save the uploaded UPI QR code image (WhatsApp Image 2026-02-26 at 02.01.00.jpeg) as frontend/public/assets/generated/upi-qr.png. This image shows NIDHI AESTICARE with UPI ID nidhi.aesticare@okhdfcbank and a Google Pay logo in the center. Replace any existing file at this path. The edited image file is frontend/public/assets/generated/upi-qr.dim_600x700.png and should be used as the source for this static asset."
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Update the createPlan mutation to return the full Result type from the backend (either { ok: bigint } or { err: string }) instead of just the planId. Modify the mutation function to properly handle both success and error variants from the backend, throwing an Error with the backend error message when an #err variant is returned so it can be caught by the mutation's onError handler."
         },
         {
-          "path": "frontend/src/components/PaywallModal.tsx",
+          "path": "frontend/src/pages/SkillInputForm.tsx",
           "operation": "modify",
-          "description": "Update the PaywallModal component to reference the new UPI QR code image at /assets/generated/upi-qr.png. Replace any existing QR code image reference or placeholder with this path. Ensure the image is rendered with appropriate sizing (width/height or responsive classes) so it is clearly visible and not distorted. Do not change the UPI ID string 'nidhi.aesticare@okhdfcbank', the modal dismissal behavior, the WhatsApp link, or any other functional aspects of the modal."
+          "description": "Add local error state to display backend and network errors. Update the createPlan mutation's onError handler to set the error message from either the backend #err variant payload or a fallback network error message. Ensure the loading state is reset after errors so the 'Generate My Sprint' button re-enables. Only navigate to PlanResults on successful plan creation (onSuccess). Display the error message prominently above the form when present, and clear it when the user retries."
         }
       ]
     }

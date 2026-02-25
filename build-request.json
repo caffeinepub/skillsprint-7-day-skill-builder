@@ -1,41 +1,61 @@
 {
   "kind": "build_request",
-  "title": "Replace UPI QR code with uploaded user image in PaywallModal",
+  "title": "Fix plan generation failure — debug and resolve backend trap/error in createPlan",
   "projectName": "SkillSprint",
-  "priority": "normal",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-38",
-      "text": "Save the uploaded UPI QR code image (WhatsApp Image 2026-02-26 at 02.01.00.jpeg) as a static asset at frontend/public/assets/generated/upi-qr.png, replacing any previously generated or placeholder QR code image at that path.",
-      "target": "frontend",
+      "id": "REQ-39",
+      "text": "Debug and fix the backend plan generation logic in backend/main.mo so that calling createPlan succeeds end-to-end without throwing a Motoko trap, returning an error variant, or causing the frontend to display 'Plan generation failed'. Identify and correct the root cause — which may be an array index out of bounds, unhandled Option unwrap, type mismatch, or runtime trap in the day-generation loop — so that a valid SprintPlan record is returned for any combination of skillName, skillLevel, hoursPerDay, and desiredOutcome inputs.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-last"
         ],
         "quotes": [
-          "add this image of upi id"
+          "it shows plan generation failed"
         ]
       },
       "acceptanceCriteria": [
-        "The file frontend/public/assets/generated/upi-qr.png exists and contains the uploaded UPI QR code image showing 'NIDHI AESTICARE' and UPI ID: nidhi.aesticare@okhdfcbank.",
-        "The PaywallModal renders this image as the QR code using the path /assets/generated/upi-qr.png.",
-        "The QR code image is clearly visible and not cropped or distorted in the modal."
+        "Submitting the SkillInputForm with any valid combination of skill, level, hours/day, and desired outcome navigates successfully to the PlanResults page without showing an error message.",
+        "The backend createPlan function returns an #ok variant containing a fully populated SprintPlan record with all 7 days populated.",
+        "No Motoko runtime trap occurs during plan generation for any valid input.",
+        "The frontend no longer displays 'Plan generation failed' or any equivalent error state after a valid form submission."
+      ]
+    },
+    {
+      "id": "REQ-40",
+      "text": "In frontend/src/pages/SkillInputForm.tsx and frontend/src/hooks/useQueries.ts, ensure the createPlan mutation's onError and onSuccess handlers correctly distinguish between a backend #err variant response and a network/call error. If the backend returns an #err variant, surface the error message from the variant payload to the user. If the call itself throws, show a clear fallback error. Do not silently swallow errors or navigate away on failure.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "it shows plan generation failed"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the backend returns an #err variant, the error message from the variant payload is displayed to the user on the SkillInputForm page.",
+        "When a network or call-level error occurs, a clear human-readable fallback error message is shown.",
+        "No silent navigation to the PlanResults page occurs when plan generation has failed.",
+        "The 'Generate My Sprint' button re-enables after an error so the user can retry."
       ]
     }
   ],
   "constraints": [
-    "Do not change any functional behavior of the PaywallModal (dismissal, layout, UPI ID display, WhatsApp link).",
-    "Do not alter the UPI ID string 'nidhi.aesticare@okhdfcbank' displayed in the modal."
+    "Do not alter the SprintPlan or DayPlan type signatures in a way that breaks existing stored plans.",
+    "Do not modify any files listed in frontend.immutablePaths.",
+    "All Motoko logic must remain in the single backend/main.mo actor."
   ],
   "nonGoals": [
-    "Changing any other UI elements in the PaywallModal.",
-    "Modifying backend logic.",
-    "Changing the Days 2–7 lock/blur behavior."
+    "Changing the paywall or payment flow.",
+    "Modifying the visual design or theme.",
+    "Adding new fields or features to the plan data structure.",
+    "Backend migration changes unrelated to the plan generation fix."
   ],
   "imageRequirements": {
     "required": [],
-    "edits": [
-      "Replace the existing QR code with the user-uploaded UPI QR code image showing NIDHI AESTICARE and UPI ID nidhi.aesticare@okhdfcbank with Google Pay logo in center (upi-qr.png > upi-qr.dim_600x700.png)"
-    ]
+    "edits": []
   }
 }

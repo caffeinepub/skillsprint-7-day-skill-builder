@@ -87,6 +87,11 @@ export default function SkillInputForm() {
       return;
     }
 
+    // Reset any previous mutation error before retrying
+    if (createPlan.isError) {
+      createPlan.reset();
+    }
+
     try {
       const planId = await createPlan.mutateAsync({
         skillName: effectiveSkill,
@@ -295,7 +300,7 @@ export default function SkillInputForm() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold" style={{ color: 'oklch(0.38 0.28 350)' }}>
-                      {mutationErrorMessage ? 'Plan generation failed' : 'Missing information'}
+                      {mutationErrorMessage ? 'Something went wrong' : 'Missing information'}
                     </p>
                     <p className="text-sm mt-0.5 break-words" style={{ color: 'oklch(0.45 0.28 350)' }}>
                       {displayedError}
@@ -324,20 +329,11 @@ export default function SkillInputForm() {
             <div className="animate-slide-up delay-500 animate-fill-both">
               <button
                 type="submit"
-                disabled={createPlan.isPending || !isValid}
-                className="w-full h-14 rounded-2xl text-white font-display font-bold text-lg transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={createPlan.isPending}
+                className="w-full h-14 rounded-2xl text-white font-display font-bold text-lg transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{
-                  background: isValid
-                    ? 'linear-gradient(135deg, oklch(0.52 0.28 295), oklch(0.62 0.28 350), oklch(0.72 0.18 200))'
-                    : 'oklch(0.7 0.02 280)',
-                  boxShadow: isValid ? '0 8px 24px oklch(0.52 0.28 295 / 0.4)' : 'none',
-                  transform: isValid ? 'translateY(0)' : 'none',
-                }}
-                onMouseEnter={(e) => {
-                  if (isValid) (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+                  background: 'linear-gradient(135deg, oklch(0.52 0.28 295), oklch(0.62 0.28 350), oklch(0.72 0.22 50))',
+                  boxShadow: createPlan.isPending ? 'none' : '0 8px 32px oklch(0.52 0.28 295 / 0.35)',
                 }}
               >
                 {createPlan.isPending ? (
@@ -348,17 +344,16 @@ export default function SkillInputForm() {
                 ) : (
                   <>
                     <Zap className="w-5 h-5" />
-                    Generate My 7-Day Sprint 🚀
+                    Generate My Sprint 🚀
                   </>
                 )}
               </button>
 
-              {/* Social proof */}
-              <div className="flex items-center justify-center gap-4 mt-4 flex-wrap">
-                {['⚡ Instant Plan', '🎯 Personalized', '📚 Study Resources', '🏆 Gamified'].map((tag) => (
-                  <span key={tag} className="text-xs text-muted-foreground font-medium">{tag}</span>
-                ))}
-              </div>
+              {!isValid && !createPlan.isPending && (
+                <p className="text-center text-xs text-muted-foreground mt-3">
+                  Complete all 4 steps above to unlock your plan ✨
+                </p>
+              )}
             </div>
           </div>
         </div>

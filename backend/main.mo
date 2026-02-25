@@ -7,8 +7,6 @@ import Runtime "mo:core/Runtime";
 
 import MixinStorage "blob-storage/Mixin";
 
-
-
 actor {
   include MixinStorage();
 
@@ -57,10 +55,10 @@ actor {
 
   var nextPlanId = 1;
 
-  func generateDayPlan(skillName : Text, level : Text, hours : Nat, dayIndex : Nat, outcome : Text) : DayPlan {
+  func generateDayPlan(skillName : Text, level : Text, hours : Nat, dayIndex : Nat, outcome : Text) : ?DayPlan {
     switch (dayIndex) {
       case (1) {
-        {
+        ?{
           objectives = "Understand the fundamentals of " # skillName # " at a " # level # " level.";
           actionTask = "Familiarize yourself with core terminologies and basic features of " # skillName # ".";
           practiceExercise = "Complete 'Getting Started' exercises using online resources.";
@@ -69,7 +67,7 @@ actor {
         };
       };
       case (2) {
-        {
+        ?{
           objectives = "Dive deeper into the first core concept of " # skillName # ".";
           actionTask = "Study the underlying principles and applications of core concept A.";
           practiceExercise = "Write code samples or exercises demonstrating concept A.";
@@ -78,7 +76,7 @@ actor {
         };
       };
       case (3) {
-        {
+        ?{
           objectives = "Study the second major building block of " # skillName # ".";
           actionTask = "Explore documentation and tutorials on core concept B.";
           practiceExercise = "Complete practical exercises for concept B.";
@@ -87,7 +85,7 @@ actor {
         };
       };
       case (4) {
-        {
+        ?{
           objectives = "Integrate core concepts through hands-on tasks.";
           actionTask = "Work on a project combining concepts A and B.";
           practiceExercise = "Reproduce real-world examples using both concepts.";
@@ -96,7 +94,7 @@ actor {
         };
       };
       case (5) {
-        {
+        ?{
           objectives = "Advance skills with intermediate techniques in " # skillName # ".";
           actionTask = "Study advanced tutorials and case studies.";
           practiceExercise = "Apply new skills to projects.";
@@ -105,7 +103,7 @@ actor {
         };
       };
       case (6) {
-        {
+        ?{
           objectives = "Consolidate skills with a final project.";
           actionTask = "Review all content and fill knowledge gaps.";
           practiceExercise = "Document final project and challenges.";
@@ -114,7 +112,7 @@ actor {
         };
       };
       case (7) {
-        {
+        ?{
           objectives = "Demonstrate accomplishment of the final outcome.";
           actionTask = "Prepare for project submission.";
           practiceExercise = "Refine results to meet standards.";
@@ -128,16 +126,25 @@ actor {
     };
   };
 
-  func generateAlignedDayPlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text, dayIndex : Nat) : DayPlan {
+  func generateAlignedDayPlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text, dayIndex : Nat) : ?DayPlan {
     generateDayPlan(skillName, level, hoursPerDay, dayIndex + 1, outcome);
   };
 
   func generateAllDays(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : [DayPlan] {
-    Array.tabulate<DayPlan>(
+    let days = Array.tabulate(
       7,
       func(dayIndex) {
         generateAlignedDayPlan(skillName, hoursPerDay, level, outcome, dayIndex);
       },
+    );
+
+    days.map(
+      func(day) {
+        switch (day) {
+          case (?unwrappedDay) { unwrappedDay };
+          case (null) { Runtime.trap("Failed to generate day plan. Please try again.") };
+        };
+      }
     );
   };
 
@@ -212,10 +219,10 @@ actor {
     };
   };
 
-  func generatePlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : SprintPlan {
+  func generatePlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : ?SprintPlan {
     let days = generateAllDays(skillName, hoursPerDay, level, outcome);
     let bonusResource = getValidBonusResource(skillName);
-    {
+    ?{
       planId = nextPlanId;
       skillName;
       hoursPerDay;
@@ -237,10 +244,16 @@ actor {
   };
 
   public shared ({ caller }) func createPlan(skillName : Text, hoursPerDay : Nat, level : Text, outcome : Text) : async Nat {
-    let plan = generatePlan(skillName, hoursPerDay, level, outcome);
-    plans.add(nextPlanId, plan);
-    nextPlanId += 1;
-    plan.planId;
+    switch (generatePlan(skillName, hoursPerDay, level, outcome)) {
+      case (null) {
+        Runtime.trap("Plan generation failed");
+      };
+      case (?plan) {
+        plans.add(nextPlanId, plan);
+        nextPlanId += 1;
+        plan.planId;
+      };
+    };
   };
 
   public shared ({ caller }) func submitTransactionId(planId : Nat, transactionId : Text) : async () {

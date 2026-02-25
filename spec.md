@@ -1,10 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Replace the placeholder UPI QR code image in the PaywallModal with the real user-uploaded UPI QR code for NIDHI AESTICARE.
+**Goal:** Debug and fix the backend `createPlan` function in SkillSprint so that plan generation succeeds end-to-end, and improve frontend error handling to clearly surface any backend or network errors.
 
 **Planned changes:**
-- Save the uploaded UPI QR code image (showing "NIDHI AESTICARE", UPI ID: nidhi.aesticare@okhdfcbank, and Google Pay logo) as the static asset at `frontend/public/assets/generated/upi-qr.png`
-- Update the PaywallModal to reference this new image at `/assets/generated/upi-qr.png`
+- Identify and fix the root cause of the Motoko runtime trap in `backend/main.mo`'s `createPlan` logic (e.g., array index out of bounds, unhandled Option unwrap, type mismatch, or loop error) so it returns a valid `#ok` `SprintPlan` with all 7 days populated for any valid input.
+- Update `frontend/src/hooks/useQueries.ts` and `frontend/src/pages/SkillInputForm.tsx` to correctly distinguish between a backend `#err` variant response and a network/call-level error, surfacing the appropriate error message to the user in each case.
+- Ensure the "Generate My Sprint" button re-enables after an error so the user can retry.
+- Prevent silent navigation to the PlanResults page when plan generation has failed.
 
-**User-visible outcome:** Users opening the PaywallModal will see the real UPI QR code for NIDHI AESTICARE, which they can scan to pay using any UPI app.
+**User-visible outcome:** Users can submit the SkillInputForm with any valid combination of inputs and successfully navigate to the PlanResults page. If an error does occur, a clear and specific error message is shown on the form page, and the user can retry.

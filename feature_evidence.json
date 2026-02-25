@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-save-the-uploaded-upi-qr-code-image-whatsapp-image-2026-02-26-at-02-01-00-jpeg-as-a-static-asset-at-frontend-public-assets-generated-upi-qr-png-replacing-any-previously-generated-or-placeholder-qr-code-image-at-that-path",
-      "featureTitle": "Save the uploaded UPI QR code image (WhatsApp Image 2026-02-26 at 02.01.00.jpeg) as a static asset at frontend/public/assets/generated/upi-qr.png, replacing any previously generated or placeholder QR code image at that path.",
+      "featureId": "feature-in-frontend-src-pages-skillinputform-tsx-and-frontend-src-hooks-usequeries-ts-ensure-the-createplan-mutation-s-onerror-and-onsuccess-handlers-correctly-distinguish-between-a-backend-err-variant-response-and-a-network-call-error-if-the-backend-returns-an-err-variant-surface-the-error-message-from-the-variant-payload-to-the-user-if-the-call-itself-throws-show-a-clear-fallback-error-do-not-silently-swallow-errors-or-navigate-away-on-failure",
+      "featureTitle": "In frontend/src/pages/SkillInputForm.tsx and frontend/src/hooks/useQueries.ts, ensure the createPlan mutation's onError and onSuccess handlers correctly distinguish between a backend #err variant response and a network/call error. If the backend returns an #err variant, surface the error message from the variant payload to the user. If the call itself throws, show a clear fallback error. Do not silently swallow errors or navigate away on failure.",
       "files": [
-        "frontend/src/components/PaywallModal.tsx"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/SkillInputForm.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,7 +17,7 @@
         "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-38"
+        "REQ-40"
       ],
       "confidence": "high"
     }
