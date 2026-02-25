@@ -3,7 +3,6 @@ import { useParams, useNavigate } from '@tanstack/react-router';
 import {
   ArrowLeft,
   Lock,
-  CheckCircle2,
   Clock,
   AlertTriangle,
   Trophy,
@@ -11,23 +10,16 @@ import {
   Star,
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetPlan, useGetPublicPlanView } from '@/hooks/useQueries';
+import { useGetPublicPlanView } from '@/hooks/useQueries';
 import type { DayPlan, PublicPlanView } from '../backend';
 import ProgressTracker from '@/components/ProgressTracker';
 import ProgressGraph from '@/components/ProgressGraph';
 import PaywallModal from '@/components/PaywallModal';
-import DownloadPdfButton from '@/components/DownloadPdfButton';
 
 // ---------------------------------------------------------------------------
 // Bonus resource URL sanitization
 // ---------------------------------------------------------------------------
 
-/**
- * The backend generates Wikipedia URLs like:
- *   https://en.wikipedia.org/wiki/Excel_programming_language
- * for unknown skills. These pages often don't exist.
- * Replace them with a Wikipedia search URL that always resolves.
- */
 function getSafeBonusResourceUrl(url: string, skillName: string): string {
   if (!url || !url.startsWith('https://')) {
     return `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(skillName)}`;
@@ -250,27 +242,16 @@ function LoadingSkeleton() {
 // ---------------------------------------------------------------------------
 
 export default function PlanResults() {
-  // planId from router is always a string
   const { planId } = useParams({ from: '/plan/$planId' });
   const navigate = useNavigate();
 
-  // completedDays as boolean[] to match ProgressTracker / ProgressGraph props
+  // completedDays is updated via the ProgressTracker's onCompletedDaysChange callback
   const [completedDays, setCompletedDays] = useState<boolean[]>(Array(7).fill(false));
 
-  // All hooks receive planId as string (matching useQueries.ts signatures)
-  const planQuery = useGetPlan(planId);
+  // Only use the public plan view — Days 2-7 are always locked
   const publicQuery = useGetPublicPlanView(planId);
-
-  const plan = planQuery.data;
   const publicView = publicQuery.data;
-
-  const isUnlocked = plan?.unlockedStatus === true;
-  const isLoading = planQuery.isLoading || publicQuery.isLoading;
-
-  const handleUnlocked = () => {
-    planQuery.refetch();
-    publicQuery.refetch();
-  };
+  const isLoading = publicQuery.isLoading;
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -287,7 +268,7 @@ export default function PlanResults() {
     );
   }
 
-  if (!plan && !publicView) {
+  if (!publicView) {
     return (
       <div className="max-w-content mx-auto px-4 sm:px-6 py-16 text-center">
         <div
@@ -309,27 +290,22 @@ export default function PlanResults() {
     );
   }
 
-  const displayData = isUnlocked && plan ? plan : publicView;
-  if (!displayData) return null;
-
-  const skillName = displayData.skillName;
-  const skillLevel = displayData.skillLevel;
-  const hoursPerDay = Number(displayData.hoursPerDay);
-  const desiredOutcome = displayData.desiredOutcome;
-  const skillOverview = displayData.skillOverview;
-  const endOfWeekResult = displayData.endOfWeekResult;
-  const commonMistakes = displayData.commonMistakes;
+  const skillName = publicView.skillName;
+  const skillLevel = publicView.skillLevel;
+  const hoursPerDay = Number(publicView.hoursPerDay);
+  const desiredOutcome = publicView.desiredOutcome;
+  const skillOverview = publicView.skillOverview;
+  const endOfWeekResult = publicView.endOfWeekResult;
+  const commonMistakes = publicView.commonMistakes;
 
   // Sanitize bonus resource URL on the frontend
-  const bonusResource = getReliableBonusResource(displayData.skillName, displayData.bonusResource);
+  const bonusResource = getReliableBonusResource(publicView.skillName, publicView.bonusResource);
 
-  // When unlocked, use all 7 days from plan.days; when locked, only Day 1 from publicView
-  const allDays: (DayPlan | null)[] = isUnlocked && plan
-    ? plan.days.slice(0, 7)
-    : [
-        (publicView as PublicPlanView)?.firstDay ?? null,
-        null, null, null, null, null, null,
-      ];
+  // Day 1 is always visible; Days 2-7 are always locked
+  const allDays: (DayPlan | null)[] = [
+    (publicView as PublicPlanView)?.firstDay ?? null,
+    null, null, null, null, null, null,
+  ];
 
   const levelEmoji: Record<string, string> = {
     Beginner: '🌱',
@@ -339,7 +315,7 @@ export default function PlanResults() {
 
   return (
     <div className="max-w-content mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
-      {/* Back + actions bar */}
+      {/* Back bar */}
       <div className="flex items-center justify-between gap-3 flex-wrap animate-slide-in-left delay-0 animate-fill-both">
         <button
           onClick={() => navigate({ to: '/' })}
@@ -348,19 +324,6 @@ export default function PlanResults() {
           <ArrowLeft className="w-4 h-4" />
           New Sprint
         </button>
-
-        <div className="flex items-center gap-2">
-          {isUnlocked && plan && <DownloadPdfButton plan={plan} />}
-          {isUnlocked && (
-            <span
-              className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full text-white"
-              style={{ background: 'linear-gradient(135deg, oklch(0.78 0.22 140), oklch(0.72 0.18 200))' }}
-            >
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              Unlocked 🎉
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Hero Card */}
@@ -381,61 +344,63 @@ export default function PlanResults() {
               <p className="text-white/70 text-xs font-bold uppercase tracking-wider mb-1">🚀 Your Sprint</p>
               <h1 className="font-display font-extrabold text-2xl sm:text-3xl leading-tight">{skillName}</h1>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-white/20 border border-white/30 text-white">
-                {levelEmoji[skillLevel] || '📊'} {skillLevel}
+            <div className="flex flex-col items-end gap-2">
+              <span
+                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full"
+                style={{ background: 'oklch(1 0 0 / 0.2)', border: '1px solid oklch(1 0 0 / 0.3)' }}
+              >
+                {levelEmoji[skillLevel] ?? '⚡'} {skillLevel}
               </span>
-              <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-white/20 border border-white/30 text-white flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {hoursPerDay}h/day
+              <span
+                className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full"
+                style={{ background: 'oklch(1 0 0 / 0.2)', border: '1px solid oklch(1 0 0 / 0.3)' }}
+              >
+                ⏱ {hoursPerDay}h/day
               </span>
             </div>
           </div>
 
-          <div className="bg-white/15 rounded-2xl p-3.5 mb-4 border border-white/20 backdrop-blur-sm">
-            <p className="text-xs text-white/70 font-bold uppercase tracking-wider mb-1">🎯 Your Goal</p>
-            <p className="text-white text-sm leading-relaxed font-medium">{desiredOutcome}</p>
+          <div
+            className="rounded-2xl p-3 mb-4"
+            style={{ background: 'oklch(1 0 0 / 0.12)', border: '1px solid oklch(1 0 0 / 0.2)' }}
+          >
+            <p className="text-white/70 text-xs font-bold uppercase tracking-wider mb-1">🎯 Goal</p>
+            <p className="text-white text-sm font-medium leading-relaxed">{desiredOutcome}</p>
           </div>
 
-          <div>
-            <p className="text-xs text-white/70 font-bold uppercase tracking-wider mb-1.5">📖 Overview</p>
-            <p className="text-white/90 text-sm leading-relaxed">{skillOverview}</p>
+          <div
+            className="rounded-2xl p-3"
+            style={{ background: 'oklch(1 0 0 / 0.12)', border: '1px solid oklch(1 0 0 / 0.2)' }}
+          >
+            <p className="text-white/70 text-xs font-bold uppercase tracking-wider mb-1">📖 Overview</p>
+            <p className="text-white text-sm font-medium leading-relaxed">{skillOverview}</p>
           </div>
         </div>
       </div>
 
-      {/* Progress Tracker — manages its own internal state; we receive updates via onCompletedDaysChange */}
+      {/* Progress Tracker — ProgressTracker manages its own completed state internally */}
       <div className="animate-slide-up delay-200 animate-fill-both">
         <ProgressTracker
           totalDays={7}
-          unlockedDays={isUnlocked ? 7 : 1}
+          unlockedDays={1}
           onCompletedDaysChange={setCompletedDays}
         />
       </div>
 
-      {/* Progress Graph — expects boolean[] */}
+      {/* Progress Graph */}
       <div className="animate-slide-up delay-300 animate-fill-both">
         <ProgressGraph completedDays={completedDays} />
       </div>
 
-      {/* Day Plans */}
-      <div className="animate-slide-up delay-400 animate-fill-both">
-        <div className="flex items-center gap-2 mb-4">
-          <h2 className="font-display font-bold text-xl gradient-text-rainbow">📅 7-Day Plan</h2>
-          {!isUnlocked && (
-            <span
-              className="text-xs font-semibold px-2.5 py-1 rounded-full"
-              style={{ background: 'oklch(0.52 0.28 295 / 0.1)', color: 'oklch(0.42 0.28 295)', border: '1px solid oklch(0.52 0.28 295 / 0.3)' }}
-            >
-              Day 1 preview 👀
-            </span>
-          )}
-        </div>
-
+      {/* Day Cards */}
+      <div>
+        <h2 className="font-display font-extrabold text-xl text-foreground mb-4 flex items-center gap-2">
+          📅 Your 7-Day Plan
+        </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {allDays.map((day, index) => {
             const dayNumber = index + 1;
-            if (day !== null) {
+            if (day) {
               return (
                 <DayCard
                   key={dayNumber}
@@ -444,127 +409,163 @@ export default function PlanResults() {
                   animationDelay={index * 80}
                 />
               );
-            } else {
-              return (
-                <LockedDayCard
-                  key={dayNumber}
-                  dayNumber={dayNumber}
-                  animationDelay={index * 80}
-                />
-              );
             }
+            return (
+              <LockedDayCard
+                key={dayNumber}
+                dayNumber={dayNumber}
+                animationDelay={index * 80}
+              />
+            );
           })}
         </div>
       </div>
 
-      {/* Paywall / Unlock CTA — planId is string, onUnlocked callback */}
-      {!isUnlocked && (
-        <div
-          className="rounded-3xl p-6 text-center animate-slide-up delay-500 animate-fill-both border-2"
-          style={{
-            background: 'linear-gradient(135deg, oklch(0.52 0.28 295 / 0.06), oklch(0.62 0.28 350 / 0.04))',
-            borderColor: 'oklch(0.52 0.28 295 / 0.25)',
-          }}
-        >
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: 'linear-gradient(135deg, oklch(0.52 0.28 295), oklch(0.62 0.28 350))' }}
-          >
-            <Trophy className="w-7 h-7 text-white" />
-          </div>
-          <h3 className="font-display font-extrabold text-xl mb-2 gradient-text-rainbow">
-            Unlock Your Full 7-Day Sprint 🚀
-          </h3>
-          <p className="text-muted-foreground text-sm mb-5 max-w-sm mx-auto leading-relaxed">
-            Get all 7 days, end-of-week results, common mistakes to avoid, and your bonus resource — everything you need to level up fast.
-          </p>
-          {/* PaywallModal expects planId: string and onUnlocked: () => void */}
-          <PaywallModal planId={planId} onUnlocked={handleUnlocked} />
-        </div>
-      )}
+      {/* Paywall Section — always shown */}
+      <div className="animate-slide-up delay-400 animate-fill-both">
+        <PaywallModal planId={planId} />
+      </div>
 
-      {/* Bonus Resource — visible in both locked and unlocked states */}
-      {bonusResource.url && (
-        <div
-          className="rounded-3xl p-5 animate-slide-up delay-600 animate-fill-both border-2"
-          style={{
-            background: 'linear-gradient(135deg, oklch(0.72 0.18 200 / 0.07), oklch(0.52 0.28 295 / 0.05))',
-            borderColor: 'oklch(0.72 0.18 200 / 0.3)',
-          }}
+      {/* End of Week Result — locked */}
+      <div
+        className="rounded-3xl p-6 relative overflow-hidden animate-slide-up delay-500 animate-fill-both"
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.72 0.22 50 / 0.08), oklch(0.85 0.2 90 / 0.06))',
+          border: '2px solid oklch(0.72 0.22 50 / 0.2)',
+        }}
+      >
+        <div className="absolute inset-0 backdrop-blur-[2px] z-10 flex items-center justify-center rounded-3xl"
+          style={{ background: 'oklch(0.98 0.01 265 / 0.7)' }}
         >
-          <div className="flex items-center gap-2 mb-3">
-            <Star className="w-5 h-5" style={{ color: 'oklch(0.72 0.18 200)' }} />
-            <h3 className="font-display font-bold text-lg" style={{ color: 'oklch(0.45 0.18 200)' }}>
-              Bonus Resource
-            </h3>
+          <div className="flex flex-col items-center gap-2">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, oklch(0.72 0.22 50), oklch(0.85 0.2 90))' }}
+            >
+              <Lock className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full text-white"
+              style={{ background: 'linear-gradient(135deg, oklch(0.72 0.22 50), oklch(0.85 0.2 90))' }}
+            >
+              🔒 Pay to unlock
+            </span>
           </div>
-          <p className="text-muted-foreground text-sm mb-3">
-            Supercharge your learning with this curated resource:
-          </p>
-          <a
-            href={bonusResource.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95"
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, oklch(0.72 0.22 50), oklch(0.85 0.2 90))' }}
+          >
+            <Trophy className="w-5 h-5 text-white" />
+          </div>
+          <h2 className="font-display font-extrabold text-xl text-foreground">End of Week Result</h2>
+        </div>
+        <div
+          className="rounded-2xl p-4"
+          style={{ background: 'oklch(0.72 0.22 50 / 0.08)', border: '1px solid oklch(0.72 0.22 50 / 0.2)' }}
+        >
+          <p className="text-sm text-foreground leading-relaxed font-medium">{endOfWeekResult}</p>
+        </div>
+      </div>
+
+      {/* Common Mistakes — locked */}
+      <div
+        className="rounded-3xl p-6 relative overflow-hidden animate-slide-up delay-500 animate-fill-both"
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.62 0.28 350 / 0.06), oklch(0.52 0.28 295 / 0.04))',
+          border: '2px solid oklch(0.62 0.28 350 / 0.2)',
+        }}
+      >
+        <div className="absolute inset-0 backdrop-blur-[2px] z-10 flex items-center justify-center rounded-3xl"
+          style={{ background: 'oklch(0.98 0.01 265 / 0.7)' }}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, oklch(0.62 0.28 350), oklch(0.52 0.28 295))' }}
+            >
+              <Lock className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full text-white"
+              style={{ background: 'linear-gradient(135deg, oklch(0.62 0.28 350), oklch(0.52 0.28 295))' }}
+            >
+              🔒 Pay to unlock
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, oklch(0.62 0.28 350), oklch(0.52 0.28 295))' }}
+          >
+            <Star className="w-5 h-5 text-white" />
+          </div>
+          <h2 className="font-display font-extrabold text-xl text-foreground">Common Mistakes to Avoid</h2>
+        </div>
+        <div className="space-y-2">
+          {commonMistakes.map((mistake, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 rounded-2xl p-3"
+              style={{ background: 'oklch(0.62 0.28 350 / 0.06)', border: '1px solid oklch(0.62 0.28 350 / 0.15)' }}
+            >
+              <span className="text-base flex-shrink-0">⚠️</span>
+              <p className="text-sm text-foreground font-medium leading-relaxed">{mistake}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bonus Resource — locked */}
+      <div
+        className="rounded-3xl p-6 relative overflow-hidden animate-slide-up delay-600 animate-fill-both"
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.72 0.18 200 / 0.08), oklch(0.52 0.28 295 / 0.06))',
+          border: '2px solid oklch(0.72 0.18 200 / 0.25)',
+        }}
+      >
+        <div className="absolute inset-0 backdrop-blur-[2px] z-10 flex items-center justify-center rounded-3xl"
+          style={{ background: 'oklch(0.98 0.01 265 / 0.7)' }}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div
+              className="w-10 h-10 rounded-2xl flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg, oklch(0.72 0.18 200), oklch(0.52 0.28 295))' }}
+            >
+              <Lock className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full text-white"
+              style={{ background: 'linear-gradient(135deg, oklch(0.72 0.18 200), oklch(0.52 0.28 295))' }}
+            >
+              🔒 Pay to unlock
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 mb-4">
+          <div
+            className="w-10 h-10 rounded-2xl flex items-center justify-center"
             style={{ background: 'linear-gradient(135deg, oklch(0.72 0.18 200), oklch(0.52 0.28 295))' }}
           >
-            <ExternalLink className="w-4 h-4 flex-shrink-0" />
-            {bonusResource.title}
-          </a>
-          <p className="mt-2 text-xs text-muted-foreground break-all">{bonusResource.url}</p>
+            <ExternalLink className="w-5 h-5 text-white" />
+          </div>
+          <h2 className="font-display font-extrabold text-xl text-foreground">🎁 Bonus Resource</h2>
         </div>
-      )}
-
-      {/* Post-unlock sections */}
-      {isUnlocked && (
-        <>
-          {/* End of Week Result */}
-          <div
-            className="rounded-3xl p-5 animate-slide-up delay-700 animate-fill-both border-2"
-            style={{
-              background: 'linear-gradient(135deg, oklch(0.85 0.2 90 / 0.07), oklch(0.72 0.22 50 / 0.05))',
-              borderColor: 'oklch(0.85 0.2 90 / 0.3)',
-            }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🏆</span>
-              <h3 className="font-display font-bold text-lg" style={{ color: 'oklch(0.55 0.22 50)' }}>
-                End of Week Result
-              </h3>
-            </div>
-            <p className="text-foreground text-sm leading-relaxed">{endOfWeekResult}</p>
+        <div
+          className="rounded-2xl p-4 flex items-center justify-between gap-3"
+          style={{ background: 'oklch(0.72 0.18 200 / 0.08)', border: '1px solid oklch(0.72 0.18 200 / 0.2)' }}
+        >
+          <div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
+              Recommended Resource
+            </p>
+            <p className="text-sm font-semibold text-foreground">{bonusResource.title}</p>
+            <p className="text-xs text-muted-foreground mt-0.5 font-mono truncate max-w-xs">
+              {bonusResource.url}
+            </p>
           </div>
-
-          {/* Common Mistakes */}
-          <div
-            className="rounded-3xl p-5 animate-slide-up delay-700 animate-fill-both border-2"
-            style={{
-              background: 'linear-gradient(135deg, oklch(0.62 0.28 350 / 0.06), oklch(0.52 0.28 295 / 0.04))',
-              borderColor: 'oklch(0.62 0.28 350 / 0.25)',
-            }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">⚠️</span>
-              <h3 className="font-display font-bold text-lg" style={{ color: 'oklch(0.52 0.28 350)' }}>
-                Common Mistakes to Avoid
-              </h3>
-            </div>
-            <ul className="space-y-2">
-              {commonMistakes.map((mistake, index) => (
-                <li key={index} className="flex items-start gap-2.5 text-sm">
-                  <span
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5"
-                    style={{ background: 'oklch(0.62 0.28 350)' }}
-                  >
-                    {index + 1}
-                  </span>
-                  <span className="text-foreground/80 leading-relaxed">{mistake}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </>
-      )}
+          <ExternalLink className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
+        </div>
+      </div>
     </div>
   );
 }

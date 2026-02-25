@@ -1,81 +1,41 @@
 {
   "kind": "build_request",
-  "title": "Fix Bonus Resource link with valid working HTTPS URLs",
+  "title": "Replace UPI QR code with uploaded user image in PaywallModal",
   "projectName": "SkillSprint",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-32",
-      "text": "In backend/main.mo, update the bonusResource URL generation logic so that every generated plan includes a valid, working HTTPS URL for the Bonus Resource that begins with 'https://', is reachable in incognito mode, and does not use example.com or any placeholder/invented domain. The URL must be a real, publicly accessible resource (e.g., a Wikipedia article, MDN page, YouTube search results page, freeCodeCamp guide, or similar authoritative public URL) that is relevant to the plan's skillName and skillLevel. The URL must be deterministically selected based on skillName (and optionally skillLevel) from a hardcoded lookup table of verified real URLs — one per skill. The bonusResource title must clearly describe the linked resource.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-recent-1"
-        ],
-        "quotes": [
-          "The 'Bonus Resource' section is showing 'This site cannot be reached'.",
-          "Replace it with a valid, working HTTPS URL.",
-          "Ensure the link begins with https:// and opens correctly in incognito mode.",
-          "Do not use example.com or placeholder URLs."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Every generated plan's bonusResource.url value begins with 'https://'.",
-        "The URL resolves to a real, publicly accessible page (not example.com or any invented domain).",
-        "The URL is chosen from a hardcoded table of verified real URLs keyed by skill name.",
-        "The bonusResource.title is non-empty and accurately describes the linked resource.",
-        "The link opens correctly in an incognito browser window without a 'This site cannot be reached' error."
-      ]
-    },
-    {
-      "id": "REQ-33",
-      "text": "In frontend/src/pages/PlanResults.tsx, ensure the Bonus Resource anchor element has its href attribute bound to the bonusResource.url value from the plan data, includes target='_blank' and rel='noopener noreferrer', and that the href is never empty, undefined, or '#'. If bonusResource.url is missing or empty, hide the Bonus Resource card entirely rather than rendering a broken link.",
+      "id": "REQ-38",
+      "text": "Save the uploaded UPI QR code image (WhatsApp Image 2026-02-26 at 02.01.00.jpeg) as a static asset at frontend/public/assets/generated/upi-qr.png, replacing any previously generated or placeholder QR code image at that path.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-recent-1"
+          "msg-1"
         ],
         "quotes": [
-          "Ensure the link begins with https:// and opens correctly in incognito mode."
+          "add this image of upi id"
         ]
       },
       "acceptanceCriteria": [
-        "The Bonus Resource anchor's href is set to bonusResource.url from the plan data.",
-        "The anchor has target='_blank' and rel='noopener noreferrer'.",
-        "If bonusResource.url is empty or undefined, the Bonus Resource card is not rendered.",
-        "Clicking the link opens the correct URL in a new tab in incognito mode."
-      ]
-    },
-    {
-      "id": "REQ-34",
-      "text": "In frontend/src/components/DownloadPdfButton.tsx, update the Bonus Resource section of the PDF template to render the bonusResource.url as a visible text URL alongside the title, so the PDF output also reflects the valid link.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-recent-1"
-        ],
-        "quotes": [
-          "Replace it with a valid, working HTTPS URL."
-        ]
-      },
-      "acceptanceCriteria": [
-        "The PDF/print output includes the bonusResource.title and its URL as readable text.",
-        "The URL shown in the PDF begins with 'https://' and matches the plan data's bonusResource.url."
+        "The file frontend/public/assets/generated/upi-qr.png exists and contains the uploaded UPI QR code image showing 'NIDHI AESTICARE' and UPI ID: nidhi.aesticare@okhdfcbank.",
+        "The PaywallModal renders this image as the QR code using the path /assets/generated/upi-qr.png.",
+        "The QR code image is clearly visible and not cropped or distorted in the modal."
       ]
     }
   ],
   "constraints": [
-    "All bonus resource URLs must be real, publicly accessible HTTPS URLs — no example.com, no invented domains, no placeholder text.",
-    "Do not change any immutable frontend paths listed in the system context.",
-    "All existing functional behavior (paywall, progress tracker, gamification, PDF download) must remain unchanged."
+    "Do not change any functional behavior of the PaywallModal (dismissal, layout, UPI ID display, WhatsApp link).",
+    "Do not alter the UPI ID string 'nidhi.aesticare@okhdfcbank' displayed in the modal."
   ],
   "nonGoals": [
-    "Adding new backend features or changing the plan data schema beyond the bonusResource URL fix.",
-    "Changing the visual design or layout of the Bonus Resource card.",
-    "Creating a new internal Bonus Resource page (external real URLs are available)."
+    "Changing any other UI elements in the PaywallModal.",
+    "Modifying backend logic.",
+    "Changing the Days 2–7 lock/blur behavior."
   ],
   "imageRequirements": {
     "required": [],
-    "edits": []
+    "edits": [
+      "Replace the existing QR code with the user-uploaded UPI QR code image showing NIDHI AESTICARE and UPI ID nidhi.aesticare@okhdfcbank with Google Pay logo in center (upi-qr.png > upi-qr.dim_600x700.png)"
+    ]
   }
 }

@@ -1,27 +1,24 @@
 import React, { useState } from 'react';
 import {
-  Lock,
   Smartphone,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-  Zap,
   ShieldCheck,
   Copy,
   Check,
-  BadgeCheck,
+  MessageCircle,
+  Zap,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useSubmitTransactionId } from '@/hooks/useQueries';
 
 interface PaywallModalProps {
   planId: string;
-  onUnlocked: () => void;
+  onClose?: () => void;
 }
 
 const UPI_ID = 'nidhi.aesticare@okhdfcbank';
 const AMOUNT = '₹20';
+const WHATSAPP_NUMBER = '919876543210'; // Replace with real WhatsApp number
+const WHATSAPP_MESSAGE = encodeURIComponent(
+  'Hi! I have paid ₹20 via UPI for the 7-Day Skill Sprint. Please find my payment screenshot attached.'
+);
 
 const UNLOCK_PERKS = [
   { emoji: '📅', text: 'Days 2–7 complete action plans' },
@@ -32,13 +29,8 @@ const UNLOCK_PERKS = [
   { emoji: '📥', text: 'PDF download access' },
 ];
 
-export default function PaywallModal({ planId, onUnlocked }: PaywallModalProps) {
-  const [transactionId, setTransactionId] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+export default function PaywallModal({ planId, onClose }: PaywallModalProps) {
   const [copied, setCopied] = useState(false);
-
-  const submitMutation = useSubmitTransactionId();
 
   const handleCopyUpi = () => {
     navigator.clipboard.writeText(UPI_ID).then(() => {
@@ -46,61 +38,6 @@ export default function PaywallModal({ planId, onUnlocked }: PaywallModalProps) 
       setTimeout(() => setCopied(false), 2000);
     });
   };
-
-  const handleVerify = async () => {
-    setError('');
-
-    if (!transactionId.trim()) {
-      setError('Please enter your UPI Transaction ID.');
-      return;
-    }
-
-    if (transactionId.trim().length < 6) {
-      setError('Transaction ID seems too short. Please check and try again.');
-      return;
-    }
-
-    try {
-      await submitMutation.mutateAsync({ planId, transactionId: transactionId.trim() });
-      setSuccess(true);
-      setTimeout(() => {
-        onUnlocked();
-      }, 1200);
-    } catch (err) {
-      setError('Verification failed. Please check your Transaction ID and try again.');
-    }
-  };
-
-  if (success) {
-    return (
-      <div
-        className="rounded-3xl border overflow-hidden text-center animate-bounce-in"
-        style={{
-          background: 'linear-gradient(160deg, oklch(0.14 0.04 265), oklch(0.18 0.06 280))',
-          borderColor: 'oklch(0.78 0.22 140 / 0.4)',
-          boxShadow: '0 0 40px oklch(0.78 0.22 140 / 0.2)',
-        }}
-      >
-        <div className="p-10">
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-4xl animate-float"
-            style={{
-              background: 'linear-gradient(135deg, oklch(0.78 0.22 140), oklch(0.72 0.18 200))',
-              boxShadow: '0 8px 24px oklch(0.78 0.22 140 / 0.4)',
-            }}
-          >
-            🎉
-          </div>
-          <h3 className="font-display font-extrabold text-2xl mb-2 gradient-text-rainbow">
-            Sprint Unlocked!
-          </h3>
-          <p className="text-sm" style={{ color: 'oklch(0.75 0.05 265)' }}>
-            Loading your full 7-day plan… 🚀
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -192,6 +129,22 @@ export default function PaywallModal({ planId, onUnlocked }: PaywallModalProps) 
         {/* ── Divider ── */}
         <div style={{ borderTop: '1px solid oklch(1 0 0 / 0.08)' }} />
 
+        {/* ── How to unlock instruction ── */}
+        <div
+          className="rounded-2xl p-4 text-center"
+          style={{
+            background: 'linear-gradient(135deg, oklch(0.52 0.28 295 / 0.12), oklch(0.62 0.28 350 / 0.08))',
+            border: '1px solid oklch(0.52 0.28 295 / 0.25)',
+          }}
+        >
+          <p className="text-sm font-semibold leading-relaxed" style={{ color: 'oklch(0.88 0.05 265)' }}>
+            To unlock the full 7-Day Skill Sprint, pay{' '}
+            <strong style={{ color: 'oklch(0.85 0.2 90)' }}>{AMOUNT}</strong> via UPI and share your
+            payment screenshot on{' '}
+            <strong style={{ color: 'oklch(0.78 0.22 140)' }}>WhatsApp</strong>.
+          </p>
+        </div>
+
         {/* ── Payment Section ── */}
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -205,7 +158,7 @@ export default function PaywallModal({ planId, onUnlocked }: PaywallModalProps) 
           </div>
 
           <div
-            className="rounded-2xl p-4 space-y-3"
+            className="rounded-2xl p-4 space-y-4"
             style={{
               background: 'oklch(1 0 0 / 0.04)',
               border: '1px solid oklch(1 0 0 / 0.1)',
@@ -262,95 +215,99 @@ export default function PaywallModal({ planId, onUnlocked }: PaywallModalProps) 
               }}
             >
               <p className="text-xs font-semibold" style={{ color: 'oklch(0.65 0.15 295)' }}>
-                Amount
+                Amount to Pay
               </p>
               <span className="text-2xl font-display font-extrabold gradient-text-purple">
                 {AMOUNT}
               </span>
             </div>
 
-            <p className="text-xs leading-relaxed px-1" style={{ color: 'oklch(0.60 0.05 265)' }}>
-              Open GPay, PhonePe, or Paytm → pay{' '}
-              <strong style={{ color: 'oklch(0.80 0.06 265)' }}>{AMOUNT}</strong> to{' '}
-              <strong style={{ color: 'oklch(0.80 0.06 265)' }}>{UPI_ID}</strong> → enter the
-              transaction ID below 👇
-            </p>
+            {/* QR Code */}
+            <div className="flex flex-col items-center gap-3 pt-1">
+              <p className="text-xs font-semibold" style={{ color: 'oklch(0.65 0.15 295)' }}>
+                Scan QR Code to Pay
+              </p>
+              <div
+                className="rounded-2xl p-3 inline-block"
+                style={{
+                  background: 'white',
+                  border: '2px solid oklch(0.52 0.28 295 / 0.3)',
+                  boxShadow: '0 4px 16px oklch(0.52 0.28 295 / 0.2)',
+                }}
+              >
+                <img
+                  src="/assets/generated/upi-qr.dim_600x700.png"
+                  alt="UPI QR Code for nidhi.aesticare@okhdfcbank"
+                  className="w-52 object-contain rounded-xl"
+                  style={{ maxHeight: '280px' }}
+                />
+              </div>
+              <p className="text-xs text-center" style={{ color: 'oklch(0.60 0.05 265)' }}>
+                Open GPay, PhonePe, or Paytm and scan this QR code
+              </p>
+            </div>
           </div>
         </div>
 
         {/* ── Divider ── */}
         <div style={{ borderTop: '1px solid oklch(1 0 0 / 0.08)' }} />
 
-        {/* ── Transaction ID Input ── */}
-        <div className="space-y-2">
-          <Label
-            htmlFor="txn-id"
-            className="text-sm font-bold flex items-center gap-2"
-            style={{ color: 'oklch(0.88 0.05 265)' }}
-          >
-            <Lock className="w-3.5 h-3.5" style={{ color: 'oklch(0.65 0.15 295)' }} />
-            Enter your UPI Transaction ID
-          </Label>
-          <Input
-            id="txn-id"
-            type="text"
-            placeholder="e.g. 123456789012"
-            value={transactionId}
-            onChange={(e) => {
-              setTransactionId(e.target.value);
-              if (error) setError('');
-            }}
-            onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
-            className="font-mono rounded-xl h-12 text-sm"
+        {/* ── WhatsApp Section ── */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <MessageCircle className="w-4 h-4" style={{ color: 'oklch(0.78 0.22 140)' }} />
+            <p
+              className="text-xs font-bold uppercase tracking-widest"
+              style={{ color: 'oklch(0.65 0.15 295)' }}
+            >
+              Share Screenshot on WhatsApp
+            </p>
+          </div>
+
+          <div
+            className="rounded-2xl p-4 space-y-3"
             style={{
-              background: 'oklch(1 0 0 / 0.05)',
-              border: `1.5px solid ${error ? 'oklch(0.62 0.28 350 / 0.7)' : 'oklch(0.52 0.28 295 / 0.35)'}`,
-              color: 'oklch(0.92 0.03 265)',
-              outline: 'none',
+              background: 'oklch(0.78 0.22 140 / 0.06)',
+              border: '1px solid oklch(0.78 0.22 140 / 0.2)',
             }}
-          />
-          {error && (
+          >
+            <p className="text-sm leading-relaxed" style={{ color: 'oklch(0.82 0.05 265)' }}>
+              After payment, send your screenshot to us on WhatsApp and we'll manually activate your
+              access.
+            </p>
+
             <div
-              className="flex items-center gap-2 text-xs font-medium p-2.5 rounded-xl"
+              className="flex items-center justify-between rounded-xl px-4 py-3"
               style={{
-                background: 'oklch(0.62 0.28 350 / 0.12)',
-                color: 'oklch(0.75 0.22 350)',
-                border: '1px solid oklch(0.62 0.28 350 / 0.25)',
+                background: 'oklch(0.78 0.22 140 / 0.1)',
+                border: '1px solid oklch(0.78 0.22 140 / 0.25)',
               }}
             >
-              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
-              {error}
+              <div>
+                <p className="text-xs font-semibold mb-0.5" style={{ color: 'oklch(0.65 0.18 140)' }}>
+                  WhatsApp Number
+                </p>
+                <span className="text-sm font-mono font-bold" style={{ color: 'oklch(0.90 0.06 265)' }}>
+                  +91 98765 43210
+                </span>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* ── Verify Button ── */}
-        <button
-          onClick={handleVerify}
-          disabled={submitMutation.isPending}
-          className="w-full h-13 rounded-xl text-white font-display font-bold text-base transition-all duration-200 flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
-          style={{
-            background: submitMutation.isPending
-              ? 'oklch(0.45 0.20 295)'
-              : 'linear-gradient(135deg, oklch(0.52 0.28 295), oklch(0.58 0.28 340), oklch(0.62 0.28 350))',
-            boxShadow: submitMutation.isPending
-              ? 'none'
-              : '0 8px 24px oklch(0.52 0.28 295 / 0.45), 0 2px 8px oklch(0.62 0.28 350 / 0.3)',
-            padding: '0.75rem 1.5rem',
-          }}
-        >
-          {submitMutation.isPending ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Verifying…
-            </>
-          ) : (
-            <>
-              <BadgeCheck className="w-5 h-5" />
-              Verify & Unlock 🚀
-            </>
-          )}
-        </button>
+            <a
+              href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2.5 py-3 px-5 rounded-xl text-white font-display font-bold text-sm transition-all duration-200 active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, oklch(0.55 0.22 140), oklch(0.65 0.20 155))',
+                boxShadow: '0 6px 20px oklch(0.55 0.22 140 / 0.4)',
+              }}
+            >
+              <MessageCircle className="w-4 h-4" />
+              Open WhatsApp 💬
+            </a>
+          </div>
+        </div>
 
         {/* ── Trust Notice ── */}
         <div
@@ -366,9 +323,9 @@ export default function PaywallModal({ planId, onUnlocked }: PaywallModalProps) 
           />
           <p className="text-xs leading-relaxed" style={{ color: 'oklch(0.72 0.10 60)' }}>
             <strong style={{ color: 'oklch(0.82 0.14 60)' }}>
-              Payments are verified manually for this beta launch.
+              Access is activated manually after payment verification.
             </strong>{' '}
-            Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.
+            Please share a clear screenshot of your payment confirmation on WhatsApp.
           </p>
         </div>
       </div>

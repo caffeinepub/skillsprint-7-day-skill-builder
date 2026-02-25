@@ -1,37 +1,26 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix Bonus Resource link with valid working HTTPS URLs",
+  "title": "Replace UPI QR code with uploaded user image in PaywallModal",
   "requirements": [
     {
-      "id": "REQ-33",
-      "summary": "Update PlanResults.tsx to render Bonus Resource link with proper href binding, target='_blank', rel='noopener noreferrer', and hide the card if URL is missing or empty",
+      "id": "REQ-38",
+      "summary": "Replace the existing QR code in PaywallModal with the uploaded UPI QR code image showing NIDHI AESTICARE and UPI ID nidhi.aesticare@okhdfcbank",
       "acceptanceCriteria": [
-        "The Bonus Resource anchor's href is set to bonusResource.url from the plan data.",
-        "The anchor has target='_blank' and rel='noopener noreferrer'.",
-        "If bonusResource.url is empty or undefined, the Bonus Resource card is not rendered.",
-        "Clicking the link opens the correct URL in a new tab in incognito mode."
+        "The file frontend/public/assets/generated/upi-qr.png exists and contains the uploaded UPI QR code image showing 'NIDHI AESTICARE' and UPI ID: nidhi.aesticare@okhdfcbank.",
+        "The PaywallModal renders this image as the QR code using the path /assets/generated/upi-qr.png.",
+        "The QR code image is clearly visible and not cropped or distorted in the modal."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/PlanResults.tsx",
-          "operation": "modify",
-          "description": "Update the Bonus Resource section to bind the anchor href to bonusResource.url, add target='_blank' and rel='noopener noreferrer' attributes, and conditionally render the Bonus Resource card only when bonusResource.url is present and non-empty. Ensure the href is never empty, undefined, or '#'."
-        }
-      ]
-    },
-    {
-      "id": "REQ-34",
-      "summary": "Update DownloadPdfButton.tsx to render bonusResource.url as visible text in the PDF template alongside the title",
-      "acceptanceCriteria": [
-        "The PDF/print output includes the bonusResource.title and its URL as readable text.",
-        "The URL shown in the PDF begins with 'https://' and matches the plan data's bonusResource.url."
-      ],
-      "file_operations": [
+          "path": "frontend/public/assets/generated/upi-qr.png",
+          "operation": "create",
+          "description": "Save the uploaded UPI QR code image (WhatsApp Image 2026-02-26 at 02.01.00.jpeg) as frontend/public/assets/generated/upi-qr.png. This image shows NIDHI AESTICARE with UPI ID nidhi.aesticare@okhdfcbank and a Google Pay logo in the center. Replace any existing file at this path. The edited image file is frontend/public/assets/generated/upi-qr.dim_600x700.png and should be used as the source for this static asset."
+        },
         {
-          "path": "frontend/src/components/DownloadPdfButton.tsx",
+          "path": "frontend/src/components/PaywallModal.tsx",
           "operation": "modify",
-          "description": "Update the Bonus Resource section in the PDF template markup to display both bonusResource.title and bonusResource.url as visible text. Ensure the URL is rendered as plain text so it appears in the printed/PDF output and begins with 'https://'."
+          "description": "Update the PaywallModal component to reference the new UPI QR code image at /assets/generated/upi-qr.png. Replace any existing QR code image reference or placeholder with this path. Ensure the image is rendered with appropriate sizing (width/height or responsive classes) so it is clearly visible and not distorted. Do not change the UPI ID string 'nidhi.aesticare@okhdfcbank', the modal dismissal behavior, the WhatsApp link, or any other functional aspects of the modal."
         }
       ]
     }

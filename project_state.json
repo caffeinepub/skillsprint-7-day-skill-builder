@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 29,
-  "summary": "SkillSprint – 7 Day Skill Builder: A web app that generates structured 7-day skill-building execution plans. Users select a skill, set hours/day, skill level, and desired outcome. AI outputs a structured plan with daily objectives, tasks, exercises, deliverables, and estimated time. Features a colorful, gamified, Gen-Z-friendly UI with animations/sliding transitions, interactive progress tracker, improvement graph, curated study content per day, and personalized learning experience. Includes PDF download and a ₹20 UPI paywall before revealing the full sprint.",
+  "projectStateVersion": 33,
+  "summary": "SkillSprint – 7 Day Skill Builder: A web app that generates structured 7-day skill-building execution plans. Users select a skill, set hours/day, skill level, and desired outcome. AI outputs a structured plan with daily objectives, tasks, exercises, deliverables, and estimated time. Features a colorful, gamified, Gen-Z-friendly UI with animations/sliding transitions, interactive progress tracker, improvement graph, and personalized learning experience. Includes PDF download. Payment system is simplified: Day 2–7 remain permanently locked with blur; paywall section shows UPI ID, static QR code, and WhatsApp number for screenshot-based manual unlock (no in-app transaction ID input or auto-unlock).",
   "architectural_notes": [
-    "UPI payment is manual (user inputs transaction ID) — no payment gateway integration required",
     "Colorful, gamified Gen-Z UI: vibrant multi-color theme, sliding/animated transitions, micro-animations on interactive elements",
     "Real UPI ID for payments: nidhi.aesticare@okhdfcbank — must be used everywhere in the payment section, no placeholders",
-    "Day plan content generation must be dynamic and index-aware — each day (1–7) must receive unique, progressively harder content; no static template text or Day 1 placeholder reuse allowed"
+    "Day plan content generation must be dynamic and index-aware — each day (1–7) must receive unique, progressively harder content; no static template text or Day 1 placeholder reuse allowed",
+    "Payment system is static/manual only: no transaction ID input, no backend verification, no auto-unlock. Day 2–7 are permanently blurred. Users pay via UPI and submit screenshot on WhatsApp."
   ],
   "known_issues": [
     "Day-wise plan content is blank — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time fields are not being populated in the generated sprint plan",
@@ -14,7 +14,8 @@
     "'Failed to generate plan, try again' error shown on plan generation — plan is not being generated successfully",
     "Bonus Resource link shows 'This site cannot be reached' — URL is invalid or unreachable"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
+  "imageRequirements": "## Edit Images\n- Replace the existing QR code with the user-uploaded UPI QR code image showing NIDHI AESTICARE and UPI ID nidhi.aesticare@okhdfcbank with Google Pay logo in center (upi-qr.png > upi-qr.dim_600x700.png)",
   "existing_features": [
     {
       "id": "feature-build-a-skill-input-form-page-as-the-app-s-landing-home-screen-the-form-must-include-1-a-skill-selector-a-dropdown-with-popular-skills-e-g-python-public-speaking-ui-design-excel-photography-writing-plus-a-custom-option-that-reveals-a-text-input-field-2-a-hours-per-day-slider-ranging-from-0-5-to-8-hours-in-0-5-increments-showing-the-current-value-3-a-skill-level-selector-with-three-buttons-beginner-intermediate-advanced-only-one-selectable-at-a-time-4-a-desired-outcome-text-input-placeholder-what-do-you-want-to-achieve-by-day-7-5-a-generate-my-sprint-cta-button-all-fields-are-required-before-submission",
@@ -199,6 +200,38 @@
         "REQ-34"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-redesign-the-paywallmodal-component-frontend-src-components-paywallmodal-tsx-to-remove-all-transaction-id-input-verification-logic-and-auto-unlock-functionality-replace-the-entire-interactive-payment-flow-with-a-static-informational-section-containing-1-the-headline-message-to-unlock-the-full-7-day-skill-sprint-pay-20-via-upi-and-share-your-payment-screenshot-on-whatsapp-2-the-upi-id-nidhi-aesticare-okhdfcbank-displayed-clearly-in-a-styled-readable-block-e-g-monospace-font-in-a-highlighted-pill-3-a-static-upi-qr-code-image-rendered-from-frontend-public-assets-generated-upi-qr-png-4-a-whatsapp-contact-section-showing-the-whatsapp-number-with-a-direct-open-whatsapp-link-wa-me-deep-link-remove-all-state-related-to-transactionid-input-submission-loading-error-messages-from-verification-and-any-calls-to-the-submittransactionid-backend-method-the-modal-must-remain-dismissible-the-overall-layout-must-remain-clean-professional-and-consistent-with-the-existing-gen-z-dark-gradient-premium-card-style",
+      "title": "Redesign the PaywallModal component (frontend/src/components/PaywallModal.tsx) to remove all transaction ID input, verification logic, and auto-unlock functionality. Replace the entire interactive payment flow with a static informational section containing: (1) the headline message 'To unlock the full 7-Day Skill Sprint, pay ₹20 via UPI and share your payment screenshot on WhatsApp.'; (2) the UPI ID 'nidhi.aesticare@okhdfcbank' displayed clearly in a styled, readable block (e.g., monospace font in a highlighted pill); (3) a static UPI QR code image rendered from frontend/public/assets/generated/upi-qr.png; (4) a WhatsApp contact section showing the WhatsApp number with a direct 'Open WhatsApp' link (wa.me deep link). Remove all state related to transactionId input, submission loading, error messages from verification, and any calls to the submitTransactionId backend method. The modal must remain dismissible. The overall layout must remain clean, professional, and consistent with the existing Gen-Z dark-gradient premium card style.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-pages-planresults-tsx-remove-all-logic-that-checks-unlock-status-from-the-backend-usecheckunlockstatus-or-equivalent-and-any-code-that-conditionally-renders-day-2-7-content-as-unlocked-based-on-a-backend-response-day-2-7-must-always-render-in-the-locked-blurred-state-regardless-of-any-stored-unlock-status-the-paywall-overlay-triggering-the-paywallmodal-must-remain-visible-for-days-2-7-at-all-times",
+      "title": "In frontend/src/pages/PlanResults.tsx, remove all logic that checks unlock status from the backend (useCheckUnlockStatus or equivalent) and any code that conditionally renders Day 2–7 content as unlocked based on a backend response. Day 2–7 must always render in the locked/blurred state regardless of any stored unlock status. The paywall overlay triggering the PaywallModal must remain visible for Days 2–7 at all times.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-frontend-src-hooks-usequeries-ts-remove-the-usecheckunlockstatus-hook-and-the-usesubmittransactionid-or-submittransactionid-mutation-hook-entirely-as-they-are-no-longer-needed-after-removing-auto-unlock-clean-up-any-imports-or-types-that-become-unused-as-a-result",
+      "title": "In frontend/src/hooks/useQueries.ts, remove the useCheckUnlockStatus hook and the useSubmitTransactionId (or submitTransactionId mutation) hook entirely, as they are no longer needed after removing auto-unlock. Clean up any imports or types that become unused as a result.",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-save-the-uploaded-upi-qr-code-image-whatsapp-image-2026-02-26-at-02-01-00-jpeg-as-a-static-asset-at-frontend-public-assets-generated-upi-qr-png-replacing-any-previously-generated-or-placeholder-qr-code-image-at-that-path",
+      "title": "Save the uploaded UPI QR code image (WhatsApp Image 2026-02-26 at 02.01.00.jpeg) as a static asset at frontend/public/assets/generated/upi-qr.png, replacing any previously generated or placeholder QR code image at that path.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -376,6 +409,18 @@
       "reqIds": [
         "REQ-32"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Simplify the payment/paywall system: remove in-app UPI transaction ID input field, remove transaction ID verification logic, remove auto-unlock functionality. Replace with a static payment section showing: (1) message 'To unlock the full 7-Day Skill Sprint, pay ₹20 via UPI and share your payment screenshot on WhatsApp.', (2) real UPI ID (nidhi.aesticare@okhdfcbank) displayed clearly, (3) a static UPI QR code image, (4) WhatsApp number for screenshot submission. Day 2–7 remain permanently locked with blur effect — no auto-unlock inside the app.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Replace the static/generated UPI QR code with a user-provided image of the UPI QR code in the PaywallModal",
+      "reqIds": [],
       "status": "pending"
     }
   ],
