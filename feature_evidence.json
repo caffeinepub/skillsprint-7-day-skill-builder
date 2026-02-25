@@ -2,20 +2,40 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-planresults-page-frontend-src-pages-planresults-tsx-to-correctly-read-and-render-all-five-fields-per-day-card-objective-action-task-practice-exercise-deliverable-and-estimated-time-from-the-plan-data-returned-by-the-backend-ensure-the-field-to-display-mapping-matches-the-backend-data-structure-field-names-exactly-e-g-actiontask-practiceexercise-estimatedtime-each-day-card-must-display-all-five-fields-with-clear-labels-and-none-of-them-should-appear-blank-when-the-backend-returns-populated-data",
-      "featureTitle": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
+      "featureId": "feature-in-the-paywallmodal-component-frontend-src-components-paywallmodal-tsx-replace-the-existing-informational-disclaimer-message-with-the-following-exact-text-payments-are-verified-manually-for-this-beta-launch-please-enter-correct-upi-transaction-id-invalid-entries-may-result-in-access-revocation-display-this-message-prominently-within-the-payment-section-styled-to-convey-trust-and-seriousness-e-g-using-a-distinct-info-warning-style-box-with-an-icon-such-as-a-shield-or-info-symbol",
+      "featureTitle": "In the PaywallModal component (frontend/src/components/PaywallModal.tsx), replace the existing informational/disclaimer message with the following exact text: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' Display this message prominently within the payment section, styled to convey trust and seriousness (e.g., using a distinct info/warning style box with an icon such as a shield or info symbol).",
       "files": [
-        "frontend/src/pages/PlanResults.tsx"
+        "frontend/src/components/PaywallModal.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
         "shadcn-ui@1.0.0",
         "build-template-react@1.0.0",
         "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
       ],
       "testIds": [
-        "REQ-10"
+        "REQ-19"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-redesign-the-paywallmodal-component-frontend-src-components-paywallmodal-tsx-to-appear-more-premium-and-trustworthy-the-redesign-must-include-1-a-refined-card-layout-with-a-dark-or-deep-gradient-background-e-g-deep-navy-dark-slate-or-rich-charcoal-contrasted-with-bright-accent-colors-from-the-existing-gen-z-palette-for-ctas-2-a-prominent-trust-badge-or-shield-icon-near-the-headline-to-signal-security-3-the-upi-id-displayed-in-a-styled-clearly-readable-block-e-g-monospace-font-in-a-highlighted-pill-or-box-4-the-qr-code-payment-instruction-area-given-a-dedicated-framed-section-with-padding-and-a-subtle-border-5-the-transaction-id-input-field-styled-with-a-clear-premium-look-larger-padding-visible-focus-ring-and-a-descriptive-label-6-the-verify-unlock-button-styled-as-a-high-contrast-gradient-cta-button-with-a-lock-or-checkmark-icon-7-subtle-dividers-between-payment-steps-to-guide-the-user-through-the-flow-all-existing-functional-behavior-submitting-transaction-id-calling-backend-error-handling-must-remain-unchanged",
+      "featureTitle": "Redesign the PaywallModal component (frontend/src/components/PaywallModal.tsx) to appear more premium and trustworthy. The redesign must include: (1) a refined card layout with a dark or deep-gradient background (e.g., deep navy, dark slate, or rich charcoal) contrasted with bright accent colors from the existing Gen-Z palette for CTAs; (2) a prominent trust badge or shield icon near the headline to signal security; (3) the UPI ID displayed in a styled, clearly readable block (e.g., monospace font in a highlighted pill or box); (4) the QR code / payment instruction area given a dedicated framed section with padding and a subtle border; (5) the transaction ID input field styled with a clear, premium look — larger padding, visible focus ring, and a descriptive label; (6) the 'Verify & Unlock' button styled as a high-contrast, gradient CTA button with a lock or checkmark icon; (7) subtle dividers between payment steps to guide the user through the flow. All existing functional behavior (submitting transaction ID, calling backend, error handling) must remain unchanged.",
+      "files": [
+        "frontend/src/components/PaywallModal.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0"
+      ],
+      "testIds": [
+        "REQ-20"
       ],
       "confidence": "high"
     }

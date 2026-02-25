@@ -1,10 +1,17 @@
 # Specification
 
 ## Summary
-**Goal:** Fix blank day-wise content in the generated 7-day sprint plan by updating both the backend generation logic and the frontend rendering.
+**Goal:** Update the PaywallModal with a new payment disclaimer message and a premium visual redesign.
 
 **Planned changes:**
-- Update `backend/main.mo` to populate all five fields (Objective, Action Task, Practice Exercise, Deliverable, Estimated Time) for each of the 7 days using a structured template approach, with each day having a distinct, progressively advancing theme derived from the user's inputs (skillName, hoursPerDay, skillLevel, desiredOutcome).
-- Update `frontend/src/pages/PlanResults.tsx` to correctly map and render all five fields per day card, ensuring field names in JSX match the exact property names returned by the backend.
+- Replace the existing payment disclaimer in `PaywallModal.tsx` with the exact text: "Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation." displayed in a styled notice box with a shield or info icon.
+- Redesign the PaywallModal with a dark/deep-gradient background (navy, slate, or charcoal) and bright Gen-Z accent colors for CTAs.
+- Add a prominent shield/security icon near the modal headline.
+- Display the UPI ID in a styled monospace pill or highlighted box.
+- Give the QR code / payment instruction area a dedicated framed section with padding and a subtle border.
+- Style the transaction ID input with larger padding, a visible focus ring, and a descriptive label.
+- Style the "Verify & Unlock" button as a high-contrast gradient CTA with a lock or checkmark icon.
+- Add subtle dividers between payment steps to guide users through the flow.
+- Preserve all existing functional behavior (submitTransactionId mutation, success/error handling, unlock state reload).
 
-**User-visible outcome:** When a sprint plan is generated, every day card (Day 1–7) displays meaningful, non-blank content for all five labeled sections: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time.
+**User-visible outcome:** The PaywallModal looks premium and trustworthy with a dark gradient card design, security iconography, clearly styled UPI details, and a prominent CTA button, while displaying the new beta payment verification notice.

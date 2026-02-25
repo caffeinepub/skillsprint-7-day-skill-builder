@@ -1,59 +1,60 @@
 {
   "kind": "build_request",
-  "title": "Fix blank day-wise content in generated sprint plan",
+  "title": "Update paywall message and premium payment UI redesign",
   "projectName": "SkillSprint",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-9",
-      "text": "Fix the backend plan generation logic in backend/main.mo so that each of the 7 days in the generated sprint plan is populated with actual, meaningful content for all five fields: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time. The content must be derived from the inputs (skillName, hoursPerDay, skillLevel, desiredOutcome) using a structured template approach. Each day must have a distinct, progressively advancing theme (e.g., Day 1 = fundamentals/setup, Day 2 = core concept A, Day 3 = core concept B, Day 4 = practice, Day 5 = intermediate application, Day 6 = project/review, Day 7 = final deliverable/assessment). No field in any day object may be left as an empty string or placeholder.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "when you are giving every day plan then mention and give them the content of what they should do the day wise content is blank"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All 7 day objects returned by the backend have non-empty strings for objective, actionTask, practiceExercise, deliverable, and estimatedTime.",
-        "Content varies meaningfully across all 7 days — no two days share the same objective or action task text.",
-        "Content references the skill name and skill level so it feels relevant to the user's input.",
-        "Estimated time is expressed as a duration (e.g., '1.5 hours') consistent with the hoursPerDay input.",
-        "Generating a plan for any supported skill (Python, Public Speaking, UI Design, Excel, Photography, Writing, or a custom skill) produces non-blank day content."
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
+      "id": "REQ-19",
+      "text": "In the PaywallModal component (frontend/src/components/PaywallModal.tsx), replace the existing informational/disclaimer message with the following exact text: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' Display this message prominently within the payment section, styled to convey trust and seriousness (e.g., using a distinct info/warning style box with an icon such as a shield or info symbol).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-recent-1"
         ],
         "quotes": [
-          "the day wise content is blank"
+          "Change the payment message to: \"Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.\""
         ]
       },
       "acceptanceCriteria": [
-        "Each day card on the Plan Results page displays all five labeled sections: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time.",
-        "Field names used in the JSX destructuring match the exact property names returned by the backend (no mismatched keys causing undefined renders).",
-        "Day 1 always renders all five fields in the unlocked/preview state.",
-        "Days 2–7 render all five fields when the plan is unlocked.",
-        "No day card shows empty or 'undefined' text for any of the five fields when the backend has returned valid data."
+        "The paywall modal displays the exact message: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.'",
+        "No old disclaimer or message text remains in its place.",
+        "The message is visually distinct (e.g., inside a styled notice box with an icon) and easy to read."
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "text": "Redesign the PaywallModal component (frontend/src/components/PaywallModal.tsx) to appear more premium and trustworthy. The redesign must include: (1) a refined card layout with a dark or deep-gradient background (e.g., deep navy, dark slate, or rich charcoal) contrasted with bright accent colors from the existing Gen-Z palette for CTAs; (2) a prominent trust badge or shield icon near the headline to signal security; (3) the UPI ID displayed in a styled, clearly readable block (e.g., monospace font in a highlighted pill or box); (4) the QR code / payment instruction area given a dedicated framed section with padding and a subtle border; (5) the transaction ID input field styled with a clear, premium look — larger padding, visible focus ring, and a descriptive label; (6) the 'Verify & Unlock' button styled as a high-contrast, gradient CTA button with a lock or checkmark icon; (7) subtle dividers between payment steps to guide the user through the flow. All existing functional behavior (submitting transaction ID, calling backend, error handling) must remain unchanged.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-recent-1"
+        ],
+        "quotes": [
+          "Make the payment section look more premium and trustworthy."
+        ]
+      },
+      "acceptanceCriteria": [
+        "The paywall modal uses a premium visual style (dark/deep gradient background or rich card styling) that clearly differs from the general app background.",
+        "A shield or security icon is visible near the modal headline.",
+        "The UPI ID is displayed in a clearly styled block (e.S., monospace pill or highlighted box).",
+        "The 'Verify & Unlock' button uses a high-contrast gradient with an icon (lock or checkmark).",
+        "The transaction ID input has generous padding, a visible focus state, and a descriptive label.",
+        "All existing functional logic (submit transaction ID, success/error states, backend call) continues to work correctly.",
+        "The redesigned modal is mobile-responsive and fits within the max-width constraint of ~800px."
       ]
     }
   ],
   "constraints": [
-    "Do not change the plan data structure shape — all existing fields (skillName, hoursPerDay, skillLevel, desiredOutcome, skillOverview, days, endOfWeekResult, commonMistakes, bonusResource, unlockedStatus) must remain intact.",
+    "Do not alter any backend logic or data structures.",
     "Do not modify files under frontend/src/hooks/ or frontend/src/components/ui.",
-    "No external AI or API calls — plan content must be generated deterministically in Motoko."
+    "All existing paywall functional behavior (submitTransactionId mutation, success/error handling, unlock state reload) must remain intact."
   ],
   "nonGoals": [
-    "Adding new fields to the plan data structure beyond the existing five per day.",
-    "Changing the paywall, progress tracker, or PDF download functionality.",
-    "Modifying the visual design or layout of day cards beyond ensuring content renders."
+    "Changing the UPI ID value or payment amount.",
+    "Adding real payment gateway integration.",
+    "Modifying any page other than the PaywallModal component.",
+    "Changing the backend verification logic."
   ],
   "imageRequirements": {
     "required": [],

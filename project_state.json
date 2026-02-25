@@ -1,13 +1,15 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "SkillSprint – 7 Day Skill Builder: A web app that generates structured 7-day skill-building execution plans. Users select a skill, set hours/day, skill level, and desired outcome. AI outputs a structured plan with daily objectives, tasks, exercises, deliverables, and estimated time. Includes progress tracker UI, PDF download, and a ₹20 UPI paywall before revealing the full sprint.",
+  "projectStateVersion": 11,
+  "summary": "SkillSprint – 7 Day Skill Builder: A web app that generates structured 7-day skill-building execution plans. Users select a skill, set hours/day, skill level, and desired outcome. AI outputs a structured plan with daily objectives, tasks, exercises, deliverables, and estimated time. Features a colorful, gamified, Gen-Z-friendly UI with animations/sliding transitions, interactive progress tracker, improvement graph, curated study content per day, and personalized learning experience. Includes PDF download and a ₹20 UPI paywall before revealing the full sprint.",
   "architectural_notes": [
-    "Light theme with blue accent, rounded cards, mobile responsive layout",
-    "UPI payment is manual (user inputs transaction ID) — no payment gateway integration required"
+    "UPI payment is manual (user inputs transaction ID) — no payment gateway integration required",
+    "Colorful, gamified Gen-Z UI: vibrant multi-color theme, sliding/animated transitions, micro-animations on interactive elements"
   ],
   "known_issues": [
-    "Day-wise plan content is blank — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time fields are not being populated in the generated sprint plan"
+    "Day-wise plan content is blank — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time fields are not being populated in the generated sprint plan",
+    "Study Resources section (curated links/resources per day card) is not visible in the plan results page draft",
+    "Resource links in day cards are linking to example.com placeholder URLs instead of real, relevant external resources"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -64,6 +66,70 @@
       "title": "Update the PlanResults page (frontend/src/pages/PlanResults.tsx) to correctly read and render all five fields per day card — Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time — from the plan data returned by the backend. Ensure the field-to-display mapping matches the backend data structure field names exactly (e.g., actionTask, practiceExercise, estimatedTime). Each day card must display all five fields with clear labels, and none of them should appear blank when the backend returns populated data.",
       "reqIds": [
         "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-entire-app-with-a-vibrant-colorful-gen-z-aesthetic-replace-the-current-blue-only-theme-with-a-dynamic-multi-color-gradient-palette-e-g-electric-purple-hot-pink-cyan-lime-green-orange-accents-applied-across-backgrounds-cards-buttons-and-ui-elements-use-bold-expressive-typography-with-emoji-usage-throughout-the-plan-cards-and-headings-apply-gradient-text-effects-on-key-headings-and-ctas-all-cards-must-use-vivid-gradient-borders-or-backgrounds-the-design-must-remain-mobile-responsive-with-max-content-width-of-800px-centered-on-desktop",
+      "title": "Redesign the entire app with a vibrant, colorful Gen-Z aesthetic. Replace the current blue-only theme with a dynamic multi-color gradient palette (e.g., electric purple, hot pink, cyan, lime green, orange accents) applied across backgrounds, cards, buttons, and UI elements. Use bold, expressive typography with emoji usage throughout the plan cards and headings. Apply gradient text effects on key headings and CTAs. All cards must use vivid gradient borders or backgrounds. The design must remain mobile-responsive with max content width of 800px centered on desktop.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-sliding-and-animated-transitions-throughout-the-app-day-cards-on-the-planresults-page-must-slide-in-sequentially-with-a-staggered-entrance-animation-each-card-sliding-up-in-with-a-slight-delay-navigating-between-sections-e-g-opening-a-day-card-switching-tabs-must-use-smooth-slide-or-fade-transitions-the-skillinputform-page-must-animate-each-form-field-into-view-on-load-with-a-staggered-slide-in-effect-use-css-keyframes-or-a-lightweight-animation-approach-e-g-tailwind-animate-classes-or-inline-style-transitions-no-external-animation-libraries-required-unless-already-available",
+      "title": "Add sliding and animated transitions throughout the app. Day cards on the PlanResults page must slide in sequentially with a staggered entrance animation (each card sliding up/in with a slight delay). Navigating between sections (e.g., opening a day card, switching tabs) must use smooth slide or fade transitions. The SkillInputForm page must animate each form field into view on load with a staggered slide-in effect. Use CSS keyframes or a lightweight animation approach (e.g., Tailwind animate classes or inline style transitions) — no external animation libraries required unless already available.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-gamification-system-on-the-planresults-page-with-xp-points-level-badges-and-streak-indicators-each-day-marked-complete-awards-a-visible-xp-amount-e-g-150-xp-display-a-cumulative-xp-counter-at-the-top-of-the-progress-tracker-that-animates-counts-up-when-xp-is-earned-show-a-streak-counter-that-increments-for-consecutive-days-completed-award-badge-icons-e-g-streak-half-way-sprint-complete-when-milestone-thresholds-are-reached-e-g-3-days-streak-badge-7-days-sprint-complete-badge-display-earned-badges-in-a-badge-shelf-section-below-the-progress-tracker-all-gamification-state-is-stored-in-frontend-local-state",
+      "title": "Implement a gamification system on the PlanResults page with XP points, level badges, and streak indicators. Each day marked complete awards a visible XP amount (e.g., +150 XP). Display a cumulative XP counter at the top of the progress tracker that animates (counts up) when XP is earned. Show a 'streak' counter that increments for consecutive days completed. Award badge icons (e.g., 🔥 Streak, ⭐ Half Way, 🏆 Sprint Complete) when milestone thresholds are reached (e.g., 3 days = Streak badge, 7 days = Sprint Complete badge). Display earned badges in a badge shelf section below the progress tracker. All gamification state is stored in frontend local state.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-day-by-day-progress-and-improvement-graph-to-the-planresults-page-use-a-bar-chart-rendered-via-a-lightweight-charting-approach-e-g-inline-svg-or-a-simple-canvas-based-chart-showing-all-7-days-on-the-x-axis-and-a-completion-progress-score-on-the-y-axis-completed-days-show-a-filled-brightly-colored-bar-incomplete-days-show-a-muted-empty-bar-the-chart-must-update-in-real-time-when-the-user-marks-a-day-complete-label-the-chart-clearly-as-your-sprint-progress-and-style-it-to-match-the-colorful-gen-z-theme",
+      "title": "Add a day-by-day progress and improvement graph to the PlanResults page. Use a bar chart (rendered via a lightweight charting approach — e.g., inline SVG or a simple canvas-based chart) showing all 7 days on the X-axis and a completion/progress score on the Y-axis. Completed days show a filled, brightly colored bar; incomplete days show a muted/empty bar. The chart must update in real time when the user marks a day complete. Label the chart clearly as 'Your Sprint Progress' and style it to match the colorful Gen-Z theme.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-curated-study-content-resources-to-each-day-card-on-the-planresults-page-each-day-card-must-display-a-study-resources-section-below-the-existing-fields-objective-action-task-practice-exercise-deliverable-estimated-time-showing-2-3-clickable-resource-links-e-g-articles-youtube-search-links-documentation-pages-relevant-to-that-day-s-topic-and-the-user-s-skill-resources-must-be-generated-deterministically-in-the-backend-based-on-skillname-skilllevel-and-the-day-s-theme-e-g-day-1-fundamentals-link-to-official-docs-or-beginner-tutorial-display-resource-links-with-a-icon-the-resource-title-and-a-short-descriptor-links-open-in-a-new-tab",
+      "title": "Add curated study content resources to each day card on the PlanResults page. Each day card must display a 'Study Resources' section below the existing fields (Objective, Action Task, Practice Exercise, Deliverable, Estimated Time) showing 2–3 clickable resource links (e.g., articles, YouTube search links, documentation pages) relevant to that day's topic and the user's skill. Resources must be generated deterministically in the backend based on skillName, skillLevel, and the day's theme (e.g., Day 1 = fundamentals → link to official docs or beginner tutorial). Display resource links with a 📚 icon, the resource title, and a short descriptor. Links open in a new tab.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-study-resources-section-so-it-renders-visibly-on-each-day-card-in-the-planresults-page-each-day-card-must-display-2-3-clickable-resource-links-below-the-five-main-fields-objective-action-task-practice-exercise-deliverable-estimated-time-each-resource-link-must-show-a-icon-a-title-and-a-short-descriptor-and-must-open-in-a-new-tab-the-resources-are-already-generated-in-the-backend-and-stored-on-each-day-s-data-ensure-the-frontend-correctly-reads-the-resources-array-from-the-plan-data-and-renders-it-if-the-resources-field-is-missing-or-empty-for-a-day-fall-back-to-showing-a-placeholder-message-no-resources-available-for-this-day-rather-than-rendering-nothing",
+      "title": "Fix the Study Resources section so it renders visibly on each day card in the PlanResults page. Each day card must display 2–3 clickable resource links below the five main fields (Objective, Action Task, Practice Exercise, Deliverable, Estimated Time). Each resource link must show a 📚 icon, a title, and a short descriptor, and must open in a new tab. The resources are already generated in the backend and stored on each day's data — ensure the frontend correctly reads the resources array from the plan data and renders it. If the resources field is missing or empty for a day, fall back to showing a placeholder message ('No resources available for this day') rather than rendering nothing.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-paywallmodal-component-frontend-src-components-paywallmodal-tsx-replace-the-existing-informational-disclaimer-message-with-the-following-exact-text-payments-are-verified-manually-for-this-beta-launch-please-enter-correct-upi-transaction-id-invalid-entries-may-result-in-access-revocation-display-this-message-prominently-within-the-payment-section-styled-to-convey-trust-and-seriousness-e-g-using-a-distinct-info-warning-style-box-with-an-icon-such-as-a-shield-or-info-symbol",
+      "title": "In the PaywallModal component (frontend/src/components/PaywallModal.tsx), replace the existing informational/disclaimer message with the following exact text: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' Display this message prominently within the payment section, styled to convey trust and seriousness (e.g., using a distinct info/warning style box with an icon such as a shield or info symbol).",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-paywallmodal-component-frontend-src-components-paywallmodal-tsx-to-appear-more-premium-and-trustworthy-the-redesign-must-include-1-a-refined-card-layout-with-a-dark-or-deep-gradient-background-e-g-deep-navy-dark-slate-or-rich-charcoal-contrasted-with-bright-accent-colors-from-the-existing-gen-z-palette-for-ctas-2-a-prominent-trust-badge-or-shield-icon-near-the-headline-to-signal-security-3-the-upi-id-displayed-in-a-styled-clearly-readable-block-e-g-monospace-font-in-a-highlighted-pill-or-box-4-the-qr-code-payment-instruction-area-given-a-dedicated-framed-section-with-padding-and-a-subtle-border-5-the-transaction-id-input-field-styled-with-a-clear-premium-look-larger-padding-visible-focus-ring-and-a-descriptive-label-6-the-verify-unlock-button-styled-as-a-high-contrast-gradient-cta-button-with-a-lock-or-checkmark-icon-7-subtle-dividers-between-payment-steps-to-guide-the-user-through-the-flow-all-existing-functional-behavior-submitting-transaction-id-calling-backend-error-handling-must-remain-unchanged",
+      "title": "Redesign the PaywallModal component (frontend/src/components/PaywallModal.tsx) to appear more premium and trustworthy. The redesign must include: (1) a refined card layout with a dark or deep-gradient background (e.g., deep navy, dark slate, or rich charcoal) contrasted with bright accent colors from the existing Gen-Z palette for CTAs; (2) a prominent trust badge or shield icon near the headline to signal security; (3) the UPI ID displayed in a styled, clearly readable block (e.g., monospace font in a highlighted pill or box); (4) the QR code / payment instruction area given a dedicated framed section with padding and a subtle border; (5) the transaction ID input field styled with a clear, premium look — larger padding, visible focus ring, and a descriptive label; (6) the 'Verify & Unlock' button styled as a high-contrast, gradient CTA button with a lock or checkmark icon; (7) subtle dividers between payment steps to guide the user through the flow. All existing functional behavior (submitting transaction ID, calling backend, error handling) must remain unchanged.",
+      "reqIds": [
+        "REQ-20"
       ],
       "version": 1
     }
@@ -127,6 +193,58 @@
       "reqIds": [
         "REQ-9"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Gamified, colorful, Gen-Z-friendly UI redesign: vibrant color palette, sliding/animated transitions between days, interactive elements with micro-animations, engaging typography and emoji usage throughout the plan",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Add curated study content/resources per day in the sprint plan (links, articles, videos, or reference material relevant to each day's topic)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add an improvement/progress graph visualizing user's day-by-day completion and skill progression (e.g., a bar or line chart showing days completed vs. planned)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Personalized learning experience: tailor day-wise content, tone, and resource suggestions based on user's skill level, hours/day, and desired outcome inputs",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Gamify the sprint plan: add XP points, badges, streaks, or achievement unlocks as users mark days complete to increase engagement",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Personalize the day-wise plan content, tone, and resource suggestions in the backend based on the user's skill level, hours per day, and desired outcome. Beginner plans must use simpler language, shorter tasks, and link to introductory resources. Intermediate plans must use moderate complexity tasks and intermediate-level resources. Advanced plans must feature complex tasks, deeper dives, and advanced references. Plans with fewer hours/day (≤2) must have shorter, more focused tasks per day. Plans with more hours/day (≥4) may include additional practice exercises. The desired outcome must be referenced in Day 7's objective and the End of Week Result field.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Audit the backend plan generation logic in backend/main.mo to confirm that the resources array on each DayPlan is being populated with 2–3 meaningful, deterministic resource entries (title, URL, descriptor) based on skillName, skillLevel, and the day's theme. If any day's resources array is empty or contains only placeholder data, fix the generation logic to produce real, relevant entries. Ensure the migration module (backend/migration.mo) also correctly preserves or injects resources when upgrading existing stored plans.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Update payment section message to: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' and redesign the payment section to look more premium and trustworthy.",
+      "reqIds": [],
       "status": "pending"
     }
   ],

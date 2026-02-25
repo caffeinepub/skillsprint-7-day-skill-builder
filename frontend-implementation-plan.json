@@ -1,23 +1,41 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix blank day-wise content in generated sprint plan",
+  "title": "Update paywall message and premium payment UI redesign",
   "requirements": [
     {
-      "id": "REQ-10",
-      "summary": "Update PlanResults page to correctly render all five fields per day card with proper field name mapping",
+      "id": "REQ-19",
+      "summary": "Replace the PaywallModal informational message with the new manual verification disclaimer text, styled prominently with a trust/warning indicator",
       "acceptanceCriteria": [
-        "Each day card on the Plan Results page displays all five labeled sections: Objective, Action Task, Practice Exercise, Deliverable, and Estimated Time.",
-        "Field names used in the JSX destructuring match the exact property names returned by the backend (no mismatched keys causing undefined renders).",
-        "Day 1 always renders all five fields in the unlocked/preview state.",
-        "Days 2–7 render all five fields when the plan is unlocked.",
-        "No day card shows empty or 'undefined' text for any of the five fields when the backend has returned valid data."
+        "The paywall modal displays the exact message: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.'",
+        "No old disclaimer or message text remains in its place.",
+        "The message is visually distinct (e.g., inside a styled notice box with an icon) and easy to read."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/PlanResults.tsx",
+          "path": "frontend/src/components/PaywallModal.tsx",
           "operation": "modify",
-          "description": "Fix the day card rendering logic to display all five fields with correct backend field mapping. Ensure destructuring uses 'objectives' (matching backend DayPlan.objectives), 'actionTask', 'practiceExercise', 'deliverable', and 'estimatedTime'. Convert estimatedTime (bigint) to a readable duration string. Add clear labels for each field in both unlocked day cards and the Day 1 preview card. Verify all five fields render for Day 1 in the public view and for all days when unlocked."
+          "description": "Replace the existing informational/disclaimer message with the new text: 'Payments are verified manually for this beta launch. Please enter correct UPI Transaction ID. Invalid entries may result in access revocation.' Style this message inside a distinct info/warning box using Tailwind classes with a shield or info icon (from lucide-react) to convey trust and seriousness. Position this message prominently within the payment section, ensuring it stands out visually from surrounding content."
+        }
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "summary": "Redesign the PaywallModal component with a premium, trustworthy appearance using dark gradient backgrounds, refined card layout, trust badges, styled UPI ID display, framed QR section, premium input styling, gradient CTA button, and subtle dividers",
+      "acceptanceCriteria": [
+        "The paywall modal uses a premium visual style (dark/deep gradient background or rich card styling) that clearly differs from the general app background.",
+        "A shield or security icon is visible near the modal headline.",
+        "The UPI ID is displayed in a clearly styled block (e.g., monospace pill or highlighted box).",
+        "The 'Verify & Unlock' button uses a high-contrast gradient with an icon (lock or checkmark).",
+        "The transaction ID input has generous padding, a visible focus state, and a descriptive label.",
+        "All existing functional logic (submit transaction ID, success/error states, backend call) continues to work correctly.",
+        "The redesigned modal is mobile-responsive and fits within the max-width constraint of ~800px."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/PaywallModal.tsx",
+          "operation": "modify",
+          "description": "Redesign the PaywallModal to appear more premium and trustworthy. Apply a dark or deep-gradient background (e.g., deep navy, dark slate, or rich charcoal with subtle gradient overlay) to the modal card. Add a prominent trust badge or shield icon (from lucide-react) near the headline. Display the UPI ID in a styled, clearly readable block using monospace font within a highlighted pill or box with a copy button. Frame the QR code and payment instruction area in a dedicated section with padding and a subtle border. Style the transaction ID input field with larger padding, a visible focus ring (using Tailwind focus: utilities), and a descriptive label above it. Transform the 'Verify & Unlock' button into a high-contrast gradient CTA button with a lock or checkmark icon from lucide-react. Add subtle dividers (using border-b or hr elements) between payment steps to guide the user through the flow. Use bright accent colors from the existing Gen-Z OKLCH palette (defined in frontend/src/index.css) for CTAs and highlights. Ensure all existing functional behavior (submitTransactionId mutation, success/error handling, unlock state reload) remains unchanged. Maintain mobile responsiveness within ~800px max-width constraint."
         }
       ]
     }

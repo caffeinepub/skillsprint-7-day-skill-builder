@@ -20,6 +20,23 @@ export interface SprintPlan {
     desiredOutcome: string;
     skillOverview: string;
 }
+export interface DayPlan {
+    deliverable: string;
+    resources: Array<Resource>;
+    actionTask: string;
+    practiceExercise: string;
+    estimatedTime: bigint;
+    objectives: string;
+}
+export interface BonusResource {
+    url: string;
+    title: string;
+}
+export interface Resource {
+    url: string;
+    title: string;
+    description: string;
+}
 export interface PublicPlanView {
     endOfWeekResult: string;
     bonusResource: BonusResource;
@@ -31,17 +48,6 @@ export interface PublicPlanView {
     desiredOutcome: string;
     skillOverview: string;
     firstDay: DayPlan;
-}
-export interface BonusResource {
-    url: string;
-    title: string;
-}
-export interface DayPlan {
-    deliverable: string;
-    actionTask: string;
-    practiceExercise: string;
-    estimatedTime: bigint;
-    objectives: string;
 }
 export interface backendInterface {
     createPlan(skillName: string, hoursPerDay: bigint, level: string, outcome: string): Promise<bigint>;

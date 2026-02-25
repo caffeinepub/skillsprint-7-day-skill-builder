@@ -1,42 +1,39 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T09:38:38.005Z",
-  "summary": "The diff addresses both REQ-9 (backend plan generation) and REQ-10 (frontend rendering). The backend generates 7 days with distinct content referencing skillName, and the frontend renders all five fields per day card. However, there are notable discrepancies: estimatedTime is typed as Nat (integer hours) in Motoko rather than a formatted duration string like '1.5 hours' as required by the AC. The skill level parameter is accepted but never interpolated into generated content strings. A migration module was added that was not requested.",
+  "generatedAt": "2026-02-25T17:46:03.761Z",
+  "summary": "The diff shows PaywallModal.tsx has been redesigned with a premium dark gradient background, shield trust badge, copyable UPI ID pill, styled transaction input, gradient CTA button, and a prominent amber trust notice with the required disclaimer text. Both REQ-19 and REQ-20 appear largely implemented. Minor details need verification due to truncation.",
   "missing_requirements": [
     {
-      "id": "REQ-9",
-      "requirement": "Estimated time is expressed as a duration (e.g., '1.5 hours') consistent with the hoursPerDay input.",
-      "reason": "The backend stores estimatedTime as Nat (integer), so fractional hours like '1.5 hours' cannot be represented. The AC explicitly requires duration strings. The formatting to a string is done only on the frontend via formatEstimatedTime, but the backend field is a plain integer that cannot express sub-hour values.",
+      "id": "REQ-20",
+      "requirement": "Subtle dividers between payment steps to guide the user through the flow.",
+      "reason": "The diff is truncated and the lower portion of the modal (payment steps area with dividers) is not visible in the diff. Cannot confirm dividers between steps are present.",
       "evidence": [
-        "backend/main.mo",
-        "frontend/src/pages/PlanResults.tsx"
+        "frontend/src/components/PaywallModal.tsx"
       ]
     },
     {
-      "id": "REQ-9",
-      "requirement": "Content references the skill level so it feels relevant to the user's input.",
-      "reason": "The 'level' parameter is accepted by generateStartDay and generateOtherDay but is never actually interpolated into any of the generated content strings — it is unused in the template text.",
+      "id": "REQ-20",
+      "requirement": "The QR code / payment instruction area given a dedicated framed section with padding and a subtle border.",
+      "reason": "The diff is truncated before the QR code / payment instruction section is shown, so it cannot be confirmed this dedicated framed section with padding and subtle border exists.",
       "evidence": [
-        "backend/main.mo"
+        "frontend/src/components/PaywallModal.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "A migration.mo module was added with a Migration.run function that increments nextPlanId by 1 as part of actor state migration.",
-      "reason": "The build request does not mention any migration module or state migration logic. This is entirely unrequested functionality.",
+      "description": "Copy-to-clipboard functionality for the UPI ID with a copied state indicator.",
+      "reason": "The handleCopyUpi function and copied/setCopied state were implemented, but neither the spec nor the requirements mention a copy button or clipboard feature for the UPI ID.",
       "evidence": [
-        "backend/migration.mo"
+        "frontend/src/components/PaywallModal.tsx"
       ]
     }
   ],
-  "confidence": 0.75,
+  "confidence": 0.7,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/pages/PlanResults.tsx",
+    "frontend/src/components/PaywallModal.tsx",
     "project_state.json"
   ]
 }

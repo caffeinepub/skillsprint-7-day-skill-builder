@@ -13,29 +13,44 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="bg-card border-b border-border sticky top-0 z-40 card-shadow">
-        <div className="max-w-content mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-border bg-white/80 backdrop-blur-xl">
+        <div
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            background: 'linear-gradient(90deg, oklch(0.52 0.28 295 / 0.08) 0%, oklch(0.62 0.28 350 / 0.06) 50%, oklch(0.72 0.18 200 / 0.05) 100%)',
+          }}
+        />
+        <div className="relative max-w-content mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <button
             onClick={() => navigate({ to: '/' })}
             className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
           >
-            <img
-              src="/assets/generated/skillsprint-logo.dim_128x128.png"
-              alt="SkillSprint Logo"
-              className="w-9 h-9 rounded-xl"
-            />
+            <div className="relative">
+              <img
+                src="/assets/generated/skillsprint-logo.dim_128x128.png"
+                alt="SkillSprint Logo"
+                className="w-9 h-9 rounded-xl"
+              />
+              <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full gradient-bg-purple animate-pulse" />
+            </div>
             <div className="flex flex-col leading-tight">
-              <span className="font-display font-700 text-base text-foreground tracking-tight">
-                SkillSprint
+              <span className="font-display font-bold text-base gradient-text-purple tracking-tight">
+                🚀 SkillSprint
               </span>
-              <span className="text-xs text-muted-foreground font-medium">7 Day Skill Builder</span>
+              <span className="text-xs text-muted-foreground font-medium">7-Day Skill Builder</span>
             </div>
           </button>
 
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              AI-Powered Plans
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border"
+              style={{
+                background: 'linear-gradient(135deg, oklch(0.52 0.28 295 / 0.1), oklch(0.62 0.28 350 / 0.1))',
+                borderColor: 'oklch(0.52 0.28 295 / 0.3)',
+                color: 'oklch(0.42 0.28 295)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full gradient-bg-purple animate-pulse" />
+              ✨ AI-Powered Plans
             </span>
           </div>
         </div>
@@ -47,7 +62,7 @@ export default function Layout({ children }: LayoutProps) {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border mt-auto">
+      <footer className="border-t border-border mt-auto bg-white/60 backdrop-blur-sm">
         <div className="max-w-content mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <img
@@ -66,9 +81,9 @@ export default function Layout({ children }: LayoutProps) {
             className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
           >
             Built with{' '}
-            <span className="text-red-500">♥</span>
+            <span className="text-neon-pink">♥</span>
             {' '}using{' '}
-            <span className="font-semibold text-blue-600">caffeine.ai</span>
+            <span className="font-bold gradient-text-purple">caffeine.ai</span>
           </a>
         </div>
       </footer>
