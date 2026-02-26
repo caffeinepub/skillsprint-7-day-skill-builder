@@ -1,2 +1,3 @@
-# skillsprint-7-day-skill-builder
-Exported from Caffeine project: SkillSprint – 7 Day Skill Builder
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`
